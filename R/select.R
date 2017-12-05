@@ -10,8 +10,8 @@
 #' Randonly Generate the Initial Generation
 #'
 #' @description Bernoulli sampling to form the initial generation of the 
-#' Genetic Algorithm. The size of the initial generatino is set to be the
-#' integer closest to 1.5C.
+#' Genetic Algorithm. The size of the initial generation is set to be the
+#' integer closest to P = 1.5*C.
 #'
 #' @usage initialization(C)
 #'
@@ -23,19 +23,41 @@
 #' members of the first generation(different models). The number of first
 #' generation is defined to be integer closest to 1.5C.
 #'
-#' @value A C by 1.5C dimension Bolean Matrix with each column
-#' representing a chromosome, where T marks that the gene (variable)
+#' @value A Bolean Matrix with dimension C by 1.5*C where each column
+#' representing a chromosome, in which T marks that the gene (variable)
 #' as active and F as inactive.
 #'
 #' @examples
 #' initialization(10)
 
-initialization <- function(C,n=as.integer(1.5 * C)){
+initialization <- function(C, P = as.integer(1.5 * C)){
   
   # Bernoulli sampling T or F to obtain C of them 
   # A T in a locus of a gene (variable) means the perticular variable is included
-  replicate(n, sample(c(F,T), size = C, replace = T))
+  pop <- replicate(P, sample(c(F,T), size = C, replace = T))
+  
+  # do not want models with all explanatory variables being inactive in 
+  # the initial generation  
+  
+  # detect if there is columns in initial generation with all F
+  zeroCol <- (colSums(pop)) == F
+  
+  if(any(zeroCol)){
+    # get which chromosomes have all F
+    replaceCol <- which(zeroCol)
+    
+    # find the least used locus 
+    # the first one found will be returned
+    replaceRow <- which.min(rowSums(pop))
+    
+    # place a T in each 0 chromosome at the least used locus
+    pop[replaceRow, replaceCol] <- T
+  }
+  
+  # randomly generated initial generation with no empty chromosomes
+  return(pop)
 }
+
 
 
 #######################################
@@ -49,8 +71,8 @@ initialization <- function(C,n=as.integer(1.5 * C)){
 #' default fitness criteria. Alternatively, we can use tournament selection.
 #'
 #' @usage
-#' selection(pop,f=AIC,dat)
-#' selection(pop,f=BIC,dat)
+#' selection(pop, f = AIC, dat)
+#' selection(pop, f = BIC, dat)
 #'
 #' @param pop boleans matrix determined by \code{GA::initialization()}
 #'
@@ -95,7 +117,7 @@ selection <- function(pop, f, dat, model, ...){
   stopifnot(nrow(pop)==length(predictors))
   
   # Process each chromosome in parallel
-  fit <- foreach::`%dopar%`(foreach::foreach(i = 1:P, .combine=c),{
+  fit <- foreach::`%dopar%`(foreach::foreach(i = 1:P, .combine = c),{
     
     # Build a formula using the chosen predictors
     chosen <- pop[,i]
@@ -106,8 +128,8 @@ selection <- function(pop, f, dat, model, ...){
                                paste(predictors[chosen], collapse = "+")))
       
       # Calculate the fitness using the provided fitness function
-      #f(model(formula=form,data=dat,...))
-      f(model(formula=form,data=dat))
+      #f(model(formula = form, data = dat,...))
+      f(model(formula = form, data = dat))
     }else{
       Inf
     }
@@ -115,7 +137,7 @@ selection <- function(pop, f, dat, model, ...){
   
   # Compute a vector of probability weights
   # Since lowest fitness is the best, take the reverse rank
-  fitness <- 2*rank(-fit)/(P*(P+1))
+  fitness <- 2 * rank(-fit) / (P * (P + 1))
   
   # Selecting Parents Method 1: Select both parents proportional to their fitness
   # Sample from the P chromosomes, with weights specified in fitness,
@@ -173,7 +195,7 @@ selection <- function(pop, f, dat, model, ...){
 mutation <- function(chr){
   
   # For each element of chr determine whether to mutate with 1% prob
-  mutate <- sample(c(T,F), length(chr), prob = c(0.01,0.99), replace = T)
+  mutate <- sample(c(T,F), length(chr), prob = c(0.01, 0.99), replace = T)
   
   # 'exclusive or' will toggle F to T and T to F
   xor(chr, mutate)
@@ -211,15 +233,15 @@ crossover <- function(chr1, chr2){
   C2 <- length(chr2)
   
   # Make sure we're working with equal-sized vectors
-  stopifnot(C1==C2)
+  stopifnot(C1 == C2)
   
   #randomly select a point as the point of crossover.
   k <- sample(1:(C1-1), 1)
   
   # Return the crossed chromosomes together
   cbind(
-    mutation(c(chr1[1:k], chr2[(k+1):C1])),
-    mutation(c(chr2[1:k], chr1[(k+1):C1]))
+    mutation(c(chr1[1:k], chr2[(k + 1):C1])),
+    mutation(c(chr2[1:k], chr1[(k + 1):C1]))
   )
 }
 
@@ -248,12 +270,12 @@ crossover <- function(chr1, chr2){
 #'
 #' @examples
 #' dat <- mtcars # use the built-in mtcars data
-#' C <- dim(dat)[2]-1 #Number of variables
+#' C <- dim(dat)[2] - 1 #Number of variables
 #' pop <- initialization(C) #produce boleans matrix
-#' selected_parents<-selection(pop, f = AIC, dat)
-#' pop<-next_generation(pop,selected_parents)
+#' selected_parents <- selection(pop, f = AIC, dat)
+#' pop <- next_generation(pop, selected_parents)
 
-next_generation<-function(pop,selected_parents){
+next_generation<-function(pop, selected_parents){
   
   chromes1 <- pop[,selected_parents$parent1_ind] # ??? - this should be making a copy
   chromes2 <- pop[,selected_parents$parent2_ind]
@@ -264,11 +286,11 @@ next_generation<-function(pop,selected_parents){
     # XXX - it'd be nice to just use C instead of ncol(pop)
     
     # breed parents
-    children_chromes<-crossover(chromes1[,pair_ind],chromes2[,pair_ind])
+    children_chromes <- crossover(chromes1[,pair_ind], chromes2[,pair_ind])
     
     # select first child, mutate, and put into pop 
     # we should consider keeping the fittest X% of parents rather than replacing them all
-    pop[,pair_ind]<-mutation(children_chromes[,1])
+    pop[,pair_ind] <- mutation(children_chromes[,1])
     
   }
   return(pop)
@@ -308,54 +330,54 @@ next_generation<-function(pop,selected_parents){
 #' 
 #'
 #' @examples
-#' dat<-mtcars
+#' dat <- mtcars
 #' mod <- lm 
 #' library('stats')
-#' f<-function(fit,...){return(extractAIC(fit,...)[2])} 
-#' results<-genetic(mod,dat,f)
+#' f <- function(fit,...){return(extractAIC(fit,...)[2])} 
+#' results <- genetic(mod, dat, f)
 #' summary(results$fittest_model)
-#' X<-matrix(rep(seq(num_gens),nrow(results$fitness),num_gens),nrow=n,ncol=num_gens)
-#' Y<-t(results$fitness)
-#' plot(X,Y,xlab='generation',ylab='AIC',pch=19,cex=0.5)
-#' lines(seq(num_gens),apply(results$fitness,FUN=min,MARGIN=2),lty=1,col='green')
+#' X <- matrix(rep(seq(num_gens), nrow(results$fitness), num_gens), nrow = n, ncol = num_gens)
+#' Y <- t(results$fitness)
+#' plot(X, Y, xlab = 'generation', ylab = 'AIC', pch = 19, cex = 0.5)
+#' lines(seq(num_gens), apply(results$fitness, FUN = min, MARGIN = 2), lty = 1, col = 'green')
 
-genetic<-function(mod,dat,f,num_gens=40,n=30){
+genetic<-function(mod, dat, f, num_gens = 40, n = 30){
   
     # initialize population 
-    C <- dim(dat)[2]-1 #Number of variables
-    pop <- initialization(C,n=n) # generate random starting population 
+    C <- dim(dat)[2] - 1 #Number of variables
+    pop <- initialization(C, n = n) # generate random starting population 
     
     for (gen in seq(num_gens)){
       
       # selection parents
-      selected_parents<-selection(pop, f, dat, mod)
+      selected_parents <- selection(pop, f, dat, mod)
       
       # store fitness for each generation to check algorithm is improving
-      if (gen==1){
-        fitness<-selected_parents$fit
+      if (gen == 1){
+        fitness <- selected_parents$fit
       }else{
-        fitness<-cbind(fitness,selected_parents$fit)
+        fitness <- cbind(fitness, selected_parents$fit)
       }
-      print(paste('Generation: ',gen,' AIC: ',min(selected_parents$fit)))
+      print(paste('Generation: ', gen, ' AIC: ', min(selected_parents$fit)))
       
       # select next generation, replacing old population
-      pop<-next_generation(pop,selected_parents)
+      pop <- next_generation(pop, selected_parents)
     }
     
     # fit the best model
     response <- colnames(dat)[1]
     predictors <- colnames(dat)[-1]
-    chosen<-selected_parents$fittest
+    chosen <- selected_parents$fittest
     form <- as.formula(paste(response, "~",
                              paste(predictors[chosen], collapse = "+")))
-    fittest_mod<-mod(formula=form,data=dat)
-    fittest_f<-f(mod(formula=form,data=dat))
+    fittest_mod <- mod(formula = form, data = dat)
+    fittest_f <- f(mod(formula = form, data = dat))
     
     # return 
     gen.result <- list()
-    gen.result$fittest_model<-fittest_mod
-    gen.result$fittest_f<-fittest_f
-    gen.result$fitness<-fitness
+    gen.result$fittest_model <- fittest_mod
+    gen.result$fittest_f <- fittest_f
+    gen.result$fitness <- fitness
     return(gen.result)
 }
 
