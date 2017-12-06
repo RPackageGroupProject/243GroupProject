@@ -14,7 +14,7 @@
 #' integer closest to P = 1.5*C.
 #'
 #' @usage initialization(C)
-#'
+#' 
 #' @param C chromosome length (number of predictor variables in the data)
 #'
 #' @details This function produces initial generation given the chromosome length
@@ -35,24 +35,6 @@ initialization <- function(C, P = as.integer(1.5 * C)){
   # Bernoulli sampling T or F to obtain C of them 
   # A T in a locus of a gene (variable) means the perticular variable is included
   pop <- replicate(P, sample(c(F,T), size = C, replace = T))
-  
-  # do not want models with all explanatory variables being inactive in 
-  # the initial generation  
-  
-  # detect if there is columns in initial generation with all F
-  zeroCol <- (colSums(pop)) == F
-  
-  if(any(zeroCol)){
-    # get which chromosomes have all F
-    replaceCol <- which(zeroCol)
-    
-    # find the least used locus 
-    # the first one found will be returned
-    replaceRow <- which.min(rowSums(pop))
-    
-    # place a T in each 0 chromosome at the least used locus
-    pop[replaceRow, replaceCol] <- T
-  }
   
   # randomly generated initial generation with no empty chromosomes
   return(pop)
@@ -253,11 +235,11 @@ crossover <- function(chr1, chr2){
 #' Breed the Selected Parents Generated From \code{GA::selection()}
 
 #' @usage
-#' next_generation(pop,selected_parents)
+#' next_generation(pop,selectedParents)
 #'
 #' @param pop boleans matrix determined by \code{GA::initialization()}
 #'
-#' @param selected_parents list returnd by \code{GA::selection()}
+#' @param selectedParents list returnd by \code{GA::selection()}
 #' At the minimum, it needs to contain indices for the selected parents 1 and 2.
 #'
 #' @param ... additional arguments to pass to the model function. DID NOT IMPLEMENT
@@ -272,13 +254,13 @@ crossover <- function(chr1, chr2){
 #' dat <- mtcars # use the built-in mtcars data
 #' C <- dim(dat)[2] - 1 #Number of variables
 #' pop <- initialization(C) #produce boleans matrix
-#' selected_parents <- selection(pop, f = AIC, dat)
-#' pop <- next_generation(pop, selected_parents)
+#' selectedParents <- selection(pop, f = AIC, dat)
+#' pop <- next_generation(pop, selectedParents)
 
-next_generation<-function(pop, selected_parents){
+nextGeneration <- function(pop, selectedParents){
   
-  chromes1 <- pop[,selected_parents$parent1_ind] # ??? - this should be making a copy
-  chromes2 <- pop[,selected_parents$parent2_ind]
+  chromes1 <- pop[,selectedParents$parent1_ind] # ??? - this should be making a copy
+  chromes2 <- pop[,selectedParents$parent2_ind]
   
   # Breed to create new generation 
   for (pair_ind in seq(ncol(pop))){
@@ -304,7 +286,7 @@ next_generation<-function(pop, selected_parents){
 #' Uses a genetic algorithm for variable selection in either lm or glm models
 
 #' @usage
-#' genetic(mod,dat,f)
+#' select(mod,dat,f)
 #' 
 #' @param model the linear model that user wants to use to fit in the data,
 #' can be either \code{lm} or \code{glm}.
@@ -334,40 +316,40 @@ next_generation<-function(pop, selected_parents){
 #' mod <- lm 
 #' library('stats')
 #' f <- function(fit,...){return(extractAIC(fit,...)[2])} 
-#' results <- genetic(mod, dat, f)
+#' results <- select(mod, dat, f)
 #' summary(results$fittest_model)
-#' X <- matrix(rep(seq(num_gens), nrow(results$fitness), num_gens), nrow = n, ncol = num_gens)
+#' X <- matrix(rep(seq(numGens), nrow(results$fitness), numGens), nrow = n, ncol = numGens)
 #' Y <- t(results$fitness)
 #' plot(X, Y, xlab = 'generation', ylab = 'AIC', pch = 19, cex = 0.5)
-#' lines(seq(num_gens), apply(results$fitness, FUN = min, MARGIN = 2), lty = 1, col = 'green')
+#' lines(seq(numGens), apply(results$fitness, FUN = min, MARGIN = 2), lty = 1, col = 'green')
 
-genetic<-function(mod, dat, f, num_gens = 40, n = 30){
+select <- function(mod, dat, f, numGens = 40, n = 30){
   
     # initialize population 
     C <- dim(dat)[2] - 1 #Number of variables
     pop <- initialization(C, n = n) # generate random starting population 
     
-    for (gen in seq(num_gens)){
+    for (gen in seq(numGens)){
       
       # selection parents
-      selected_parents <- selection(pop, f, dat, mod)
+      selectedParents <- selection(pop, f, dat, mod)
       
       # store fitness for each generation to check algorithm is improving
       if (gen == 1){
-        fitness <- selected_parents$fit
+        fitness <- selectedParents$fit
       }else{
-        fitness <- cbind(fitness, selected_parents$fit)
+        fitness <- cbind(fitness, selectedParents$fit)
       }
-      print(paste('Generation: ', gen, ' AIC: ', min(selected_parents$fit)))
+      print(paste('Generation: ', gen, ' AIC: ', min(selectedParents$fit)))
       
       # select next generation, replacing old population
-      pop <- next_generation(pop, selected_parents)
+      pop <- next_generation(pop, selectedParents)
     }
     
     # fit the best model
     response <- colnames(dat)[1]
     predictors <- colnames(dat)[-1]
-    chosen <- selected_parents$fittest
+    chosen <- selectedParents$fittest
     form <- as.formula(paste(response, "~",
                              paste(predictors[chosen], collapse = "+")))
     fittest_mod <- mod(formula = form, data = dat)
