@@ -7,7 +7,7 @@
 ####  Initialization
 #######################################
 
-#' Randonly Generate the Initial Generation
+#' Randomly Generate the Initial Generation
 #'
 #' @description Bernoulli sampling to form the initial generation of the 
 #' Genetic Algorithm. The size of the initial generation is set to be the
@@ -23,23 +23,105 @@
 #' members of the first generation(different models). The number of first
 #' generation is defined to be integer closest to 1.5C.
 #'
-#' @value A Bolean Matrix with dimension C by 1.5*C where each column
+#' @return A Bolean Matrix with dimension C by 1.5*C where each column
 #' representing a chromosome, in which T marks that the gene (variable)
 #' as active and F as inactive.
 #'
 #' @examples
 #' initialization(10)
-
 initialization <- function(C, P = as.integer(1.5 * C)){
   
   # Bernoulli sampling T or F to obtain C of them 
   # A T in a locus of a gene (variable) means the perticular variable is included
-  pop <- replicate(P, sample(c(F,T), size = C, replace = T))
-  
-  # randomly generated initial generation with no empty chromosomes
-  return(pop)
+  replicate(P, sample(c(F,T), size = C, replace = T))
+
 }
 
+
+#######################################
+#### Calculate Fitness
+#######################################
+
+#' Calculate Fitness based on Fitness Function
+#' 
+#' @description Calculate the fitness value for each individuals in the
+#' generation based on the passed in fitness function. 
+#' 
+#' @usage fitness(pop, dat, fitnessFunction, model)
+#' 
+#' @param pop boleans matrix determined by \code{GA::initialization()}
+#' 
+#' @param dat data frame containing the predictors in the model.
+#' First column should be the response variable.
+#' 
+#' @param fitnessFunction fitness function that takes in an lm or glm model and
+#' returns a numerical fitness of that model. Users can choose AIC or BIC or
+#' even define by themselves. If the argument is missing, the default is AIC.
+#' 
+#' @param model the linear model that user wants to use to fit in the data,
+#' can be either \code{lm} or \code{glm}.
+#' 
+#' @return Returns a matrix containing one row with \code{ncol(pop)} 
+#' observations of the fitness scores of each chromosomes.
+#' 
+#' @examples 
+#' dat <- mtcars
+#' pop <- initialization(ncol(dat) - 1)
+#' model <- lm
+#' fitnessFunction <- AIC
+#' fitness(pop, dat, fitnessFunction, model)
+fitness <- function(pop, dat, fitnessFunction, model) {
+  
+  # Number of chromosomes
+  P <- ncol(pop)
+  
+  # Variables are columns of the dataset
+  response <- colnames(dat)[1]
+  predictors <- colnames(dat)[-1]
+  
+  # Input parameters must be named matrices
+  stopifnot(!is.null(P) && !is.null(response) && !is.null(predictors))
+  
+  # Number of genes must equal number of predictors
+  stopifnot(nrow(pop) == length(predictors))
+  
+  # place holder vector for score on fitness function
+  fit <- c()
+  
+  # Process each chromosome 
+  for (i in 1:P) {
+    
+    # Build a formula using the chosen predictors
+    chosen <- pop[,i]
+    
+    # When at least one predictor is active
+    if(sum(chosen)) {
+      form <- as.formula(paste(response, "~",
+                               paste(predictors[chosen], collapse = "+")))
+      
+      # Calculate the fitness using the provided fitness function
+      score <- fitnessFunction(model(formula = form, data = dat))
+      
+      # update the place holder vector
+      fit <- c(fit, score)
+    }
+    
+    # When all predictors are inactive
+    else {
+      form <- as.formula(paste(response, "~", 1))
+      
+      # Calculate the fitness using the provided fitness function
+      fitnessFunction(model(formula = form, data = dat))
+      
+      # update the place holder vector
+      fit <- c(fit, score)
+    }
+  }
+  
+  # convert the result to a matrix
+  return(matrix(fit, nrow = 1))
+  
+}
 
 
 #######################################
@@ -49,7 +131,7 @@ initialization <- function(C, P = as.integer(1.5 * C)){
 #' Select Parents Generated From \code{GA::initialization()}
 #' Based on Given Fitness Function
 #'
-#' Selecting parents based on fitness ranks, with AIC as the
+#' @description Selecting parents based on fitness ranks, with AIC as the
 #' default fitness criteria. Alternatively, we can use tournament selection.
 #'
 #' @usage
@@ -82,7 +164,6 @@ initialization <- function(C, P = as.integer(1.5 * C)){
 #' C <- dim(dat)[2]-1 #Number of variables
 #' pop <- initialization(C) #produce boleans matrix
 #' selection(pop, f = AIC, dat)
-
 selection <- function(pop, f, dat, model, ...){
   
   # number of chromosomes
@@ -157,7 +238,7 @@ selection <- function(pop, f, dat, model, ...){
 
 #' Chromosome Mutation
 #'
-#' Make a chromosome with fixed probability 0.01 to mutate
+#' @description Make a chromosome with fixed probability 0.01 to mutate
 #'
 #' @usage mutation(chr)
 #'
@@ -167,13 +248,11 @@ selection <- function(pop, f, dat, model, ...){
 #' in each locale. If mutation happens at one locale, it will make the value
 #' in that locale from T to F(or F to T).
 #'
-#' @return Return a mutated chromosome vector
-#' with the same length as input one.
+#' @return Return a mutated chromosome vector with the same length as input one.
 #'
 #' @examples
 #' ind<-initialization(10)[,1]
 #' mutation(ind)
-
 mutation <- function(chr){
   
   # For each element of chr determine whether to mutate with 1% prob
@@ -181,7 +260,9 @@ mutation <- function(chr){
   
   # 'exclusive or' will toggle F to T and T to F
   xor(chr, mutate)
+  
 }
+
 
 #######################################
 ####  Crossover
@@ -189,7 +270,7 @@ mutation <- function(chr){
 
 #' Genetic Operatior: Chromosome Crossover and Mutation
 #'
-#' Make 2 individual parent chromosomes crossover and
+#' @description Make 2 individual parent chromosomes crossover and
 #' mutate when breeding offsprings.
 #'
 #' @usage crossover(chr1,chr2)
@@ -208,7 +289,6 @@ mutation <- function(chr){
 #' ind1<-initialization(10)[,1]
 #' ind2<-initialization(10)[,2]
 #' crossover(ind1,ind2)
-
 crossover <- function(chr1, chr2){
   
   C1 <- length(chr1)
@@ -233,9 +313,9 @@ crossover <- function(chr1, chr2){
 #######################################
 
 #' Breed the Selected Parents Generated From \code{GA::selection()}
-
+#'
 #' @usage
-#' next_generation(pop,selectedParents)
+#' nextGeneration(pop,selectedParents)
 #'
 #' @param pop boleans matrix determined by \code{GA::initialization()}
 #'
@@ -247,7 +327,7 @@ crossover <- function(chr1, chr2){
 #' @details Breeding uses \code{GA::crossover()} for each pair of parents
 #' The first child is chosen to replace that pair of parents
 #' Children chromosomes replace all parent chromosomes in the population 
-
+#'
 #' @return Returns a bolean matrix to replace the origin pop matrix 
 #'
 #' @examples
@@ -255,8 +335,7 @@ crossover <- function(chr1, chr2){
 #' C <- dim(dat)[2] - 1 #Number of variables
 #' pop <- initialization(C) #produce boleans matrix
 #' selectedParents <- selection(pop, f = AIC, dat)
-#' pop <- next_generation(pop, selectedParents)
-
+#' pop <- nextGeneration(pop, selectedParents)
 nextGeneration <- function(pop, selectedParents){
   
   chromes1 <- pop[,selectedParents$parent1_ind] # ??? - this should be making a copy
@@ -284,7 +363,7 @@ nextGeneration <- function(pop, selectedParents){
 #######################################
 
 #' Uses a genetic algorithm for variable selection in either lm or glm models
-
+#'
 #' @usage
 #' select(mod,dat,f)
 #' 
@@ -297,7 +376,7 @@ nextGeneration <- function(pop, selectedParents){
 #' @param f fitness function that takes in an lm or glm model and returns a
 #' a numerical 'qualification' of that model. Users can choose AIC or BIC or
 #' even define by themselves. If the f argument is missing, the default is AIC.
-
+#'
 #' @param ... additional arguments to pass to the model function. DID NOT IMPLEMENT YET
 #'
 #' @details The algorithm: 
@@ -306,11 +385,10 @@ nextGeneration <- function(pop, selectedParents){
 #' (2) calculates fitness of models and selects parent pairs to breed
 #' (3) breeds the parent pairs, choosing the first child
 #' (4) replaces the parents with the children
-
+#'
 #' @return Returns a list with the fittest model and 
 #' a matrix of the population fitness across generations (useful for plotting)
 #' 
-#'
 #' @examples
 #' dat <- mtcars
 #' mod <- lm 
@@ -322,7 +400,6 @@ nextGeneration <- function(pop, selectedParents){
 #' Y <- t(results$fitness)
 #' plot(X, Y, xlab = 'generation', ylab = 'AIC', pch = 19, cex = 0.5)
 #' lines(seq(numGens), apply(results$fitness, FUN = min, MARGIN = 2), lty = 1, col = 'green')
-
 select <- function(mod, dat, f, numGens = 40, n = 30){
   
     # initialize population 
@@ -343,7 +420,7 @@ select <- function(mod, dat, f, numGens = 40, n = 30){
       print(paste('Generation: ', gen, ' AIC: ', min(selectedParents$fit)))
       
       # select next generation, replacing old population
-      pop <- next_generation(pop, selectedParents)
+      pop <- nextGeneration(pop, selectedParents)
     }
     
     # fit the best model
