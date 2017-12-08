@@ -465,16 +465,17 @@ nextGeneration <- function(pop, selResult, G){
   # Breed to create new generation
   for (i in offspringNum / 2){
 
-    # breed parents
-    childrenChromes <- crossover(allParent1[,i], allParent2[,i])
+    # Each time generate two offspring, stored in columns
+    childrenChromes <- crossover(allParent1[, i], allParent2[, i])
 
-    # select first child, mutate, and put into pop
+    # Select first child and put into pop
     # we should consider keeping the fittest X% of parents rather than replacing them all
     # allParent1[,lessFitIndex1[i]] <- mutation(childrenChromes[,1])
     # allParent2[,lessFitIndex2[i]] <- mutation(childrenChromes[,2])
 
-    pop[, lessFitInd[i]] <- childrenChromes[,1]
-    pop[, lessFitInd[i + offspringNum / 2]] <- childrenChromes[,1]
+    # Select first child and put into pop
+    pop[, lessFitInd[i]] <- childrenChromes[, 1]
+    pop[, lessFitInd[i + offspringNum / 2]] <- childrenChromes[, 2]
 
   }
 
