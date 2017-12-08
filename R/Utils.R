@@ -208,7 +208,60 @@ selection <- function(pop, fitScore, offspringNum, dat, method){
     indexParent2 <- sample(x = 1:P, size = offspringNum / 2, replace = T)
 
   }
-
+  else if (method == 3){
+    
+    #define function to find the index of the best fit in the assigned group
+    myFit <- function(k){
+      ind <- order(fitness(pop[,GroupInd[,k]], dat, fitnessFunction, model))[1]
+      return(ind)
+    }
+    
+    #initialize some index needed in while loop
+    goodFitTol <- rep(0, offspringNum)
+    m <- 1:K
+    
+    #
+    choose <- 0
+    
+    #Number of the population after the select iteration
+    numRest <- P
+    popInd <- 1:P
+    
+    while(choose < offspringNum){
+      
+      #sample the index of the population to implement the randomly choosing
+      sampInd <- sample(popInd, numRest- numRest %% K)
+      
+      #Partition into K disjoint subsets, each column represents a group
+      GroupInd <- matrix(sampInd, ncol=K)
+      
+      #Find the index of best individual in each group
+      goodFit <- sapply(m, myFit)+floor(numRest/K)*(m-1)
+      
+      #count the total number of good fit indivduals
+      choose <- choose + K
+      
+      #remove the indivdual that was chosen
+      popInd <- popInd[-goodFit]
+      
+      #combine the good fit individuals' index to a vector
+      goodFitTol <- cbind(goodFitTol, goodFit)
+      
+      #number of rest poplation will be used in the next iteration
+      numRest <- numRest-K
+    }
+    
+    #if the number of choose larger than the number of population(P) we need, choose the first P
+    if(choose > offspringNum){
+      goodFitTol <- goodFitTol[1:offspringNum]
+    }
+    #Randomly pair the parents
+    randomPairInd <- sample(1:offspringNum, offspringNum/2)
+    
+    indexParent1 <- goodFitTol[,randomPairInd]
+    indexParent2 <- goodFitTol[,-randomPairInd]
+    
+  }
   else {
     stop("Need to pass in a selection mechanism.")
   }
@@ -226,7 +279,7 @@ selection <- function(pop, fitScore, offspringNum, dat, method){
 
 
 #######################################
-####  tournament selection (need to be edited)
+####  Tournament selection (need to be edited)
 #######################################
 
 #' Select Parents Generated From \code{GA::initialization()}
@@ -259,65 +312,7 @@ selection <- function(pop, fitScore, offspringNum, dat, method){
 #'
 #' @return Returns a list that contain two bolean matrix to replace the origin pop matrix
 #'
-tournament <- function(K, C, P, ...){
 
-  #intialize 5*P number population
-  pop <- initialization(C, 5P)
-
-  P <- length(ncol(pop))
-
-  #define function to find the index of the best fit in the assigned group
-  myFit <- function(k){
-    ind <- order(fitness(pop[,GroupInd[,k]], dat))[1]
-    return(ind)
-  }
-
-  #initialize some index needed in while loop
-  goodFitTol <- rep(0, P)
-  m <- 1:K
-  choose <- 0
-  numRest <- P
-
-  while(choose < P){
-
-    #sample the index of the population to implement the randomly choosing
-    sampInd <- sample(numRest- numRest %% k)
-
-    #Partition into K disjoint subsets, each column represents a group
-    GroupInd <- matrix(sampInd, ncol=k)
-
-    #Find the index of best individual in each group
-    goodFit <- sapply(m, myFit)+floor(numRest/k)*(m-1)
-
-    #count the total number of good fit indivduals
-    choose <- choose + K
-
-    #remove the indivdual that was chosen
-    sample <- sampInd[-goodFit]
-
-    #combine the good fit individuals' index to a vector
-    goodFitTol <- cbind(goodFitTol, goodFit)
-
-    #number of rest poplation will be used in the next iteration
-    numRest <- numRest-K
-  }
-
-  #if the number of choose larger than the number of population(P) we need, choose the first P
-  if(choose > P ){
-    goodFitTol <- goodFitTol[1:p]
-  }
-  #Randomly pair the parents
-  randomPairInd <- sample(1:P, P/2)
-
-  allParent1 <- pop[,randomPairInd]
-  allParent2 <- pop[,-randomPairInd]
-
-  sel.result <- list()
-  sel.result$allParent1<-allParent1
-  sel.result$allParent2<-allParent2
-
-  return(sel.result)
-}
 
 
 #######################################
