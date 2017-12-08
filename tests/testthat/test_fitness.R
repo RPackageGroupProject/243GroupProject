@@ -1,9 +1,4 @@
 
-test_that("there are no NA's in initialization", {
-  expect_equal(sum(is.na(initialization(30,30))),0)
-  #expect_equal(sum(is.na(initialization(30,30))),1) # this obviously fails (but I did it to check)
-})
-
 
 test_that("fitness() returns a lower value for a known better model than a known worse model", {
 
@@ -19,7 +14,6 @@ test_that("fitness() returns a lower value for a known better model than a known
 })
 
 test_that("fitness() returns a vector and not a matrix"){
-
   pop <- initialization(ncol(dat) - 1)
   model<-lm
   fitnessFunction<-AIC
@@ -28,5 +22,4 @@ test_that("fitness() returns a vector and not a matrix"){
   y<-as.matrix(mtcars[1])
   fit<-fitness(pop,y,X,fitnessFunction,model)
   expect_equal(is(fit,'vector'),TRUE)
-
 }
