@@ -19,6 +19,8 @@
 #'
 #' @param ... additional arguments to pass to the model function. DID NOT IMPLEMENT YET
 #'
+#' @param G numeric number in the range of (0, 1].
+#'
 #' @details The algorithm:
 #' (1) First initializes population,
 #' For g generations; do:
@@ -45,7 +47,7 @@
 select <- function(dat, P, numGens, G, fitnessFunction, method, model, family){
 
 
-  # make default inputs
+  # Make default inputs
   if (is.null(P)) {P <- as.integer(1.5 * C)}
   if (is.null(numGens)) {numGens <- 50}
   if (is.null(G)) {G <- 0.1}
@@ -54,20 +56,31 @@ select <- function(dat, P, numGens, G, fitnessFunction, method, model, family){
   if (is.null(model)) {model <- lm}
   if (is.null(family)) {family <- gaussian}
 
-  # check if inputs are valid
+  # Check if inputs are valid
 
-  # initialize population
+  # Initialize population
   C <- ncol(dat) - 1 #Number of variables
   pop <- initialization(C, P) # generate random starting population
+
+
+  # Obtain the number of offspring (offspringNum) needed to be generated
+  selectPop <- ceiling(P * G)
+  if (selectPop %% 2 == 0) {
+    offspringNum <- selectPop
+  }
+  else if (selectPop + 1 >= P) {
+    offspringNum <- selectPop - 1
+  }
+  else {
+    offspringNum <- selectPop + 1
+  }
+
 
   # loop over the genetic algorithm
   for (gen in seq(numGens)) {
 
     # obtain fitness scores for each model
-    fitScore <- fitness(pop, dat, fitnessFunction, model)
-
-
-
+    fitScore <- fitness(pop, X, y, fitnessFunction, model)
 
 
 

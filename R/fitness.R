@@ -12,6 +12,7 @@
 #' @param pop boleans matrix determined by \code{GA::initialization()}
 #'
 #' @param X data matrix with rows as observations and columns as predictors in the model.
+#'
 #' @param y response variable vector
 #'
 #' @param fitnessFunction fitness function that takes in an lm or glm model and
@@ -24,7 +25,7 @@
 #' @return Returns a matrix containing one row with \code{ncol(pop)}
 #' observations of the fitness scores of each chromosomes.
 
-fitness <- function(pop,y,X,fitnessFunction,model) {
+fitness <- function(pop, y, X, fitnessFunction, model) {
 
   # Number of chromosomes
   P <- ncol(pop)
@@ -35,18 +36,18 @@ fitness <- function(pop,y,X,fitnessFunction,model) {
   # place holder vector for score on fitness function
   fit <- c()
 
-  for (i in 1:P) {
+  for (i in 1 : P) {
 
     # Select columns of data matrix X, based on chromosome
-    chosen <- pop[,i]
-    Xsel<-X[,chosen]
+    chosen <- pop[, i]
+    Xsel <- X[, chosen]
 
     # check for null model
-    if (ncol(Xsel)==0){Xsel=1}
+    if (ncol(Xsel) == 0) {Xsel = 1}
 
     # Calculate the fitness using lm() or glm()
-    score <- fitnessFunction(model(y~Xsel, data = dat))
-    stopifnot(length(score)==1)
+    score <- fitnessFunction(model(y ~ Xsel, data = dat))
+    stopifnot(length(score) == 1)
 
     # update the place holder vector
     fit <- c(fit, score)

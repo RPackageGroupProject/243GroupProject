@@ -2,32 +2,30 @@
 ####  Initialization
 #######################################
 
-#' Randomly Generate the Initial Generation
+#' Generate the Initial Generation Randomly
 #'
 #' @description Bernoulli sampling to form the initial generation of the
-#' Genetic Algorithm. The size of the initial generation is set to be the
-#' integer closest to P = 1.5*C.
+#' Genetic Algorithm.
 #'
 #' @usage initialization(C)
 #'
-#' @param C chromosome length (number of predictor variables in the data)
+#' @param C chromosome length (number of predictor variables)
 #'
-#' @details This function produces initial generation given the chromosome length
-#' for Genetic Algorithm. The row of the generated boolean matrix represents the
-#' locus of a gene(variable), and the column of the matrix represents different
-#' members of the first generation(different models). The number of first
-#' generation is defined to be integer closest to 1.5C.
+#' @details This function produces initial generation given the chromosome
+#' length for Genetic Algorithm and the population size. The row of the
+#' generated boolean matrix represents the locus of a gene(variable), and the
+#' column of the matrix represents different members of the first generation.
 #'
-#' @return A Bolean Matrix with dimension C by 1.5*C where each column
-#' representing a chromosome, in which T marks that the gene (variable)
+#' @return A Bolean Matrix with dimension C by P where each column
+#' representing a chromosome, in which T marks that the gene(variable)
 #' as active and F as inactive.
 #'
 #' @examples
 #' initialization(10)
-initialization <- function(C, P = as.integer(1.5 * C)){
+initialization <- function(C, P){
 
   # Bernoulli sampling T or F to obtain C of them
-  # A T in a locus of a gene (variable) means the perticular variable is included
+  # T in a locus of a gene (variable) means the perticular variable is included
   replicate(P, sample(c(F,T), size = C, replace = T))
 
 }
@@ -240,16 +238,16 @@ selection <- function(pop, fitScore, offspringNum, dat, method){
 #'
 #' @usage mutation(chr)
 #'
-#' @param chr a logical vector representing an individual chromosome.
+#' @param chr a boolean vector representing an individual chromosome.
 #'
 #' @details This function makes a chromosome have a 1% fixed chance to mutate
 #' in each locale. If mutation happens at one locale, it will make the value
-#' in that locale from T to F(or F to T).
+#' in that locale from T to F or from F to T.
 #'
-#' @return Return a mutated chromosome vector with the same length as input one.
+#' @return Return a mutated chromosome vector with the same length as input.
 #'
 #' @examples
-#' ind<-initialization(10)[,1]
+#' ind <- initialization(10)[, 1]
 #' mutation(ind)
 mutation <- function(chr){
 
@@ -266,29 +264,30 @@ mutation <- function(chr){
 ####  Crossover
 #######################################
 
-#' Genetic Operatior: Chromosome Crossover and Mutation
+#' Genetic Operator: Chromosome Crossover and Mutation
 #'
 #' @description Make 2 individual parent chromosomes crossover and
 #' mutate when breeding offsprings.
 #'
-#' @usage crossover(chr1,chr2)
+#' @usage crossover(chr1, chr2)
 #'
 #' @param chr1,chr2 a numeric vectors represents individual parent chromosome.
 #'
-#' @details This function makes two individual parent chromosomes
-#' perfrom crossover and mutation when breeding next generation.
-#' Note that the crossover is simply one-point crossover
-#' and the mutation is based on \code{GA::mutation()}.
+#' @details This function makes two individual parent chromosomes perfrom
+#' crossover and mutation when breeding offspring.
+#' Note that the crossover is simply one-point crossover and the mutation
+#' is based on \code{GA::mutation()}.
 #'
-#' @return A matrix with each column representing the
-#' offsprings from a process of crossover and mutation.
+#' @return A C by 2 matrix with each column representing the offspring from a genetic
+#' operator of crossover and mutation, C is the chromosome length.
 #'
 #' @examples
-#' ind1<-initialization(10)[,1]
-#' ind2<-initialization(10)[,2]
-#' crossover(ind1,ind2)
+#' ind1 <- initialization(10)[, 1]
+#' ind2 <- initialization(10)[, 2]
+#' crossover(ind1, ind2)
 crossover <- function(chr1, chr2){
 
+  # length of each chromosome
   C1 <- length(chr1)
   C2 <- length(chr2)
 
@@ -299,39 +298,36 @@ crossover <- function(chr1, chr2){
   k <- sample(1 : (C1 - 1), 1)
 
   # Return the crossed chromosomes together
-  cbind(
-    mutation(c(chr1[1 : k], chr2[(k + 1) : C1])),
-    mutation(c(chr2[1 : k], chr1[(k + 1) : C1]))
+  cbind(mutation(c(chr1[1 : k], chr2[(k + 1) : C1])),
+        mutation(c(chr2[1 : k], chr1[(k + 1) : C1]))
   )
 }
 
 
 #######################################
-####  Choose Next Generation *need to check
+####  Choose Next Generation
 #######################################
 
 #' Breed the Selected Parents Generated From \code{GA::selection()}
 #'
-#' @usage
-#' nextGeneration(pop,selResult)
+#' @usage nextGeneration(pop, selResult, G)
 #'
 #' @param pop boleans matrix determined by \code{GA::initialization()}
 #'
 #' @param selResult list returnd by \code{GA::selection()}
 #' At the minimum, it needs to contain indices for the selected parents 1 and 2.
 #'
-#' @param G numeric number in the range of (0, 1].
+#' @param offspringNum number of offspring generated to update the generation.
 #'
-#' @param ... additional arguments to pass to the model function. DID NOT IMPLEMENT
+#' @details Breeding uses \code{GA::crossover()} for each pair of parents. The
+#' Generation Gap G is the proportion of the generation to be replaced by
+#' generated offspring. If the number of the selected population produced by
+#' generation gap is not an even number, choose the nearest bigger even number.
+#' Uses the offspringNum number of offspring to replace the least fit
+#' individuals in parent generation
 #'
-#' @details Breeding uses \code{GA::crossover()} for each pair of parents
-#' The Generation Gap G is the proportion of the generation to be replaced by generated offspring.
-#' If the number of the selected population produced by generation gap is not an even number, choose the
-#' nearest larger even integer.
-#'
-#' Producing the G*P number of offspring to replace the least fit individual in parent generation
-#'
-#' @return Returns a list that contain two bolean matrix to replace the origin pop matrix
+#' @return Returns a C by P maatrix containing the population for the next
+#' generation.
 #'
 #' @examples
 #' dat <- mtcars # use the built-in mtcars data
@@ -339,7 +335,7 @@ crossover <- function(chr1, chr2){
 #' pop <- initialization(C) #produce boleans matrix
 #' selResult <- selection(pop, f = AIC, dat)
 #' pop <- nextGeneration(pop, selResult)
-nextGeneration <- function(pop, selResult, G){
+nextGeneration <- function(pop, selResult, offspringNum){
 
   # P <- length(ncol(pop))
   # selectPop <- P * G
