@@ -140,6 +140,7 @@ selection <- function(pop, fitScore, offspringNum, dat, method){
     
     indexParent1 <- goodFitTol[randomPairInd]
     indexParent2 <- goodFitTol[-randomPairInd]
+     
     
   }
   
