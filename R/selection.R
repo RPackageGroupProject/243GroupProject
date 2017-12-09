@@ -94,7 +94,7 @@ selection <- function(pop, fitScore, offspringNum, dat, method, K){
 
     #define function to find the index of the best fit in the assigned group
     myFit <- function(m){
-      ind <- order(fitness(pop[,GroupInd[,m]], dat, fitnessFunction, model))[1]
+      ind <- order(fitness(pop[,GroupInd[,m]], X, y, fitnessFunction, model))[1]
       return(ind)
     }
 
