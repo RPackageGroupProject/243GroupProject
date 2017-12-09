@@ -1,9 +1,4 @@
 
-test_that("there are no NA's in initialization", {
-  expect_equal(sum(is.na(initialization(30,30))),0)
-  #expect_equal(sum(is.na(initialization(30,30))),1) # this obviously fails (but I did it to check)
-})
-
 
 test_that("fitness() returns a lower value for a known better model than a known worse model", {
 
@@ -13,20 +8,18 @@ test_that("fitness() returns a lower value for a known better model than a known
   known_pop<-cbind(mod_best,mod_other)
 
   # make sure when I tweak the fitness function, I get mod_best lower AIC than mod_other.
-  fit<-fitness(known_pop,mtcars,AIC,lm)
+  X<-as.matrix(mtcars[-1])
+  y<-as.matrix(mtcars[1])
+  fit<-fitness(pop,y,X,AIC,lm)
+
   expect_equal(fit[1]<=fit[2],TRUE)
 
 })
 
-test_that("fitness() returns a vector and not a matrix"){
-
+test_that("fitness() returns a vector and not a matrix",{
   pop <- initialization(ncol(dat) - 1)
-  model<-lm
-  fitnessFunction<-AIC
-  data<-mtcars
   X<-as.matrix(mtcars[-1])
   y<-as.matrix(mtcars[1])
-  fit<-fitness(pop,y,X,fitnessFunction,model)
+  fit<-fitness(pop,y,X,AIC,lm)
   expect_equal(is(fit,'vector'),TRUE)
-
-}
+})
