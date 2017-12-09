@@ -88,6 +88,61 @@ selection <- function(pop, fitScore, offspringNum, dat, method){
   
   }
   
+  else if (method == 3){
+    
+    #define function to find the index of the best fit in the assigned group
+    myFit <- function(m){
+      ind <- order(fitness(pop[,GroupInd[,m]], dat, fitnessFunction, model))[1]
+      return(ind)
+    }
+    
+    #initialize some index needed in while loop
+    m <- 1:K
+    
+    #index of how many number of we already choose
+    choose <- 0
+    
+    #Number of the population after the select iteration
+    numRest <- P
+    popInd <- 1:P
+    goodFitTol <- NULL
+    
+    while(choose < offspringNum){
+      
+      #sample the index of the population to implement the randomly choosing
+      sampInd <- sample(popInd, numRest- numRest %% K)
+      
+      #Partition into K disjoint subsets, each column represents a group
+      GroupInd <- matrix(sampInd, ncol=K)
+      
+      #Find the index of best individual in each group
+      goodFit <- sapply(m, myFit)+floor(numRest/K)*(m-1)
+      
+      #count the total number of good fit indivduals
+      choose <- choose + K
+      
+      #remove the indivdual that was chosen
+      popInd <- popInd[-goodFit]
+      
+      #combine the good fit individuals' index to a vector
+      goodFitTol <- c(goodFitTol, goodFit)
+      
+      #number of rest poplation will be used in the next iteration
+      numRest <- numRest-K
+    }
+    
+    #if the number of choose larger than the number of population(P) we need, choose the first P
+    if(choose > offspringNum){
+      goodFitTol <- goodFitTol[1:offspringNum]
+    }
+    #Randomly pair the parents
+    randomPairInd <- sample(1:offspringNum, offspringNum/2)
+    
+    indexParent1 <- goodFitTol[randomPairInd]
+    indexParent2 <- goodFitTol[-randomPairInd]
+    
+  }
+  
   else {
     stop("Need to pass in a selection mechanism.")
   }
