@@ -42,44 +42,65 @@
 #' Y <- t(results$fitness)
 #' plot(X, Y, xlab = 'generation', ylab = 'AIC', pch = 19, cex = 0.5)
 #' lines(seq(numGens), apply(results$fitness, FUN = min, MARGIN = 2), lty = 1, col = 'green')
-select <- function(mod, dat, f, numGens = 40, P = 30){
+select <- function(dat, P, numGens, G, fitnessFunction, method, model, family){
 
-    # initialize population
-    C <- dim(dat)[2] - 1 #Number of variables
-    pop <- initialization(C, P = P) # generate random starting population
 
-    for (gen in seq(numGens)){
+  # make default inputs
+  if (is.null(P)) {P <- as.integer(1.5 * C)}
+  if (is.null(numGens)) {numGens <- 50}
+  if (is.null(G)) {G <- 0.1}
+  if (is.null(fitnessFunction)) {fitnessFunction <- AIC}
+  if (is.null(method)) {method <- 1}
+  if (is.null(model)) {model <- lm}
+  if (is.null(family)) {family <- gaussian}
 
-      # selection parents
-      selectedParents <- selection(pop, f, dat, mod)
+  # check if inputs are valid
 
-      # store fitness for each generation to check algorithm is improving
-      if (gen == 1){
-        fitness <- selectedParents$fit
-      }else{
-        fitness <- cbind(fitness, selectedParents$fit)
+  # initialize population
+  C <- ncol(dat) - 1 #Number of variables
+  pop <- initialization(C, P) # generate random starting population
+
+  # loop over the genetic algorithm
+  for (gen in seq(numGens)) {
+
+    # obtain fitness scores for each model
+    fitScore <- fitness(pop, dat, fitnessFunction, model)
+
+
+
+
+
+
+    # selection parents
+    selectedParents <- selection(pop, fitScore, offspringNum, dat, method, K){
+
+    # store fitness for each generation to check algorithm is improving
+    if (gen == 1) {
+      fitness <- selectedParents$fit
       }
-      print(paste('Generation: ', gen, ' AIC: ', min(selectedParents$fit)))
+    else {
+      fitness <- cbind(fitness, selectedParents$fit)
+      }
 
-      # select next generation, replacing old population
-      pop <- nextGeneration(pop, selectedParents)
+    print(paste('Generation: ', gen, ' AIC: ', min(selectedParents$fit)))
+    # select next generation, replacing old population
+    pop <- nextGeneration(pop, selectedParents)
     }
+  # fit the best model
+  response <- colnames(dat)[1]
+  predictors <- colnames(dat)[-1]
+  chosen <- selectedParents$fittest
+  form <- as.formula(paste(response, "~",
+                           paste(predictors[chosen], collapse = "+")))
+  fittest_mod <- mod(formula = form, data = dat)
+  fittest_f <- f(mod(formula = form, data = dat))
 
-    # fit the best model
-    response <- colnames(dat)[1]
-    predictors <- colnames(dat)[-1]
-    chosen <- selectedParents$fittest
-    form <- as.formula(paste(response, "~",
-                             paste(predictors[chosen], collapse = "+")))
-    fittest_mod <- mod(formula = form, data = dat)
-    fittest_f <- f(mod(formula = form, data = dat))
-
-    # return
-    gen.result <- list()
-    gen.result$fittest_model <- fittest_mod
-    gen.result$fittest_f <- fittest_f
-    gen.result$fitness <- fitness
-    return(gen.result)
+  # return
+  gen.result <- list()
+  gen.result$fittest_model <- fittest_mod
+  gen.result$fittest_f <- fittest_f
+  gen.result$fitness <- fitness
+  return(gen.result)
 }
 
 
