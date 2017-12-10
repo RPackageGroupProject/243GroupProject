@@ -30,10 +30,10 @@
 #' selResult <- selection(pop, f = AIC, dat)
 #' pop <- nextGeneration(pop, selResult)
 nextGeneration <- function(pop, selResult, offspringNum){
-  
+
   # Size of the generation
   P <- ncol(pop)
-  
+
   # Extract the parents
   allParent1 <- pop[,selResult$indexParent1]
   allParent2 <- pop[,selResult$indexParent2]
@@ -41,19 +41,21 @@ nextGeneration <- function(pop, selResult, offspringNum){
   # Extract the index of the individuals in the parenting generation that
   # needed to be replaced by offspring
   lessFitInd <- order(selResult$fitnessScores, decreasing = T)[1 : offspringNum]
-  
+
   # Breed to create new generation
   for (i in offspringNum / 2){
-    
+
     # Each time generate two offspring, stored in columns
     childrenChromes <- crossover(allParent1[, i], allParent2[, i])
 
     # Select first child and put into pop
     pop[, lessFitInd[i]] <- childrenChromes[, 1]
     pop[, lessFitInd[i + offspringNum / 2]] <- childrenChromes[, 2]
-    
+
   }
-  
+
   # Output the population for the next generation
   return(pop)
 }
+
+

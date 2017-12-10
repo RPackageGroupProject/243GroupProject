@@ -53,6 +53,9 @@ fitness <- function(pop, y, X, fitnessFunction, model) {
     fit <- c(fit, score)
   }
 
-  # convert the result to a matrix
+  # return the result
   return(fit)
 }
+
+
+

@@ -23,9 +23,12 @@
 #' @examples
 #' initialization(10)
 initialization <- function(C, P){
-  
+
   # Bernoulli sampling T or F to obtain C of them
   # T in a locus of a gene (variable) means the perticular variable is included
   replicate(P, sample(c(F,T), size = C, replace = T))
-  
+
 }
+
+
+

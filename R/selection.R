@@ -11,7 +11,7 @@
 #' method of tournament selection.
 #'
 #' @usage
-#' selection(pop, fitScore, offspringNum, dat, method = 1, K)
+#' selection(pop, fitScore, offspringNum, method = 1, K)
 #'
 #' @param pop boleans matrix determined by \code{GA::initialization()}.
 #'
@@ -19,9 +19,6 @@
 #' be the case that a lower fitness score means a better model.
 #'
 #' @param offspringNum number of offspring generated to update the generation.
-#'
-#' @param dat data frame containing the predictors in the model.
-#' First column should be the response variable.
 #'
 #' @param method the selection mechanism that user wants to apply to select
 #' parents, can be choosen from 1 to 3; 1 indicates selecting both parents with
@@ -47,8 +44,8 @@
 #' fitnessFunction <- AIC
 #' fitScore <- fitness(pop, X, y, fitnessFunction, model)
 #' offspringNum <- 10
-#' selection(pop, fitScore, offspringNum, dat, method = 1, K)
-selection <- function(pop, fitScore, offspringNum, dat, method, K){
+#' selection(pop, fitScore, offspringNum, method = 1, K)
+selection <- function(pop, fitScore, offspringNum, method, K){
 
   # Size of the generation
   P <- ncol(pop)

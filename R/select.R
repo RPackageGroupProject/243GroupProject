@@ -39,13 +39,17 @@
 #' library('stats')
 #' f <- function(fit,...){return(extractAIC(fit,...)[2])}
 #' results <- select(mod, dat, f)
-#' summary(results$fittest_model)
+#' summary(results$fittestModel)
 #' X <- matrix(rep(seq(numGens), nrow(results$fitness), numGens), nrow = n, ncol = numGens)
 #' Y <- t(results$fitness)
 #' plot(X, Y, xlab = 'generation', ylab = 'AIC', pch = 19, cex = 0.5)
 #' lines(seq(numGens), apply(results$fitness, FUN = min, MARGIN = 2), lty = 1, col = 'green')
-select <- function(dat, P, numGens, G, fitnessFunction, method, model, family){
+select <- function(dat,
+                   P = NULL, numGens = NULL, G = NULL, fitnessFunction = NULL,
+                   method = NULL, model = NULL, family = NULL){
 
+  # Number of variables, same as chromosome length
+  C <- ncol(dat) - 1
 
   # Make default inputs
   if (is.null(P)) {P <- as.integer(1.5 * C)}
@@ -58,10 +62,9 @@ select <- function(dat, P, numGens, G, fitnessFunction, method, model, family){
 
   # Check if inputs are valid
 
-  # Initialize population
-  C <- ncol(dat) - 1 #Number of variables
-  pop <- initialization(C, P) # generate random starting population
 
+  # Initialize population
+  pop <- initialization(C, P) # generate random starting population
 
   # Obtain the number of offspring (offspringNum) needed to be generated
   selectPop <- ceiling(P * G)
@@ -75,45 +78,52 @@ select <- function(dat, P, numGens, G, fitnessFunction, method, model, family){
     offspringNum <- selectPop + 1
   }
 
+  # Obtain the inputs X and y for fitness()
+  X <- as.matrix(dat[-1]) # predictors matrix
+  y <- as.matrix(dat[1])  # response variable vector
 
-  # loop over the genetic algorithm
+
+  # Loop over the genetic algorithm
   for (gen in seq(numGens)) {
 
-    # obtain fitness scores for each model
+    # Obtain fitness scores for each model
     fitScore <- fitness(pop, X, y, fitnessFunction, model)
 
-
-
-    # selection parents
-    selectedParents <- selection(pop, fitScore, offspringNum, dat, method, K){
+    # Selection of parents
+    selResult <- selection(pop, fitScore, offspringNum, method, K)
 
     # store fitness for each generation to check algorithm is improving
     if (gen == 1) {
-      fitness <- selectedParents$fit
+      fitnessScores <- selResult$fitnessScores
       }
     else {
-      fitness <- cbind(fitness, selectedParents$fit)
+      fitnessScores <- cbind(fitnessScores, selResult$fitnessScores)
       }
 
-    print(paste('Generation: ', gen, ' AIC: ', min(selectedParents$fit)))
-    # select next generation, replacing old population
-    pop <- nextGeneration(pop, selectedParents)
-    }
+    print(paste('Generation: ', gen, ' AIC: ', min(selResult$fitnessScores)))
+
+    # select next generation by updating the current generation
+    pop <- nextGeneration(pop, selResult, offspringNum)
+
+  }
+
   # fit the best model
   response <- colnames(dat)[1]
   predictors <- colnames(dat)[-1]
-  chosen <- selectedParents$fittest
+  chosen <- pop[,which.min(fitnessScores)]
+
+  # fit the best model
   form <- as.formula(paste(response, "~",
                            paste(predictors[chosen], collapse = "+")))
-  fittest_mod <- mod(formula = form, data = dat)
-  fittest_f <- f(mod(formula = form, data = dat))
+  fittestMod <- mod(formula = form, data = dat)
+  fittestScore <- fitnessFunction(mod(formula = form, data = dat))
 
   # return
-  gen.result <- list()
-  gen.result$fittest_model <- fittest_mod
-  gen.result$fittest_f <- fittest_f
-  gen.result$fitness <- fitness
-  return(gen.result)
+  genResult <- list()
+  genResult$fittestModel <- fittestMod
+  genResult$fittestScore <- fittestScore
+  genResult$fitnessScores <- fitnessScores
+  return(genResult)
 }
 
 

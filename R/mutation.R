@@ -20,11 +20,14 @@
 #' ind <- initialization(10)[, 1]
 #' mutation(ind)
 mutation <- function(chr){
-  
+
   # For each element of chr determine whether to mutate with 1% prob
   mutate <- sample(c(T,F), length(chr), prob = c(0.01, 0.99), replace = T)
-  
+
   # 'exclusive or' will toggle F to T and T to F
   xor(chr, mutate)
-  
+
 }
+
+
+
