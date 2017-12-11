@@ -11,11 +11,11 @@
 #' method of tournament selection.
 #'
 #' @usage
-#' selection(pop, fitScore, offspringNum, method = 1, K)
+#' selection(pop, fitScores, offspringNum, method = 1, K)
 #'
 #' @param pop boleans matrix determined by \code{GA::initialization()}.
 #'
-#' @param fitScore fitness scores calculated by \code{GA::fitness()}. It must
+#' @param fitScores fitness scores calculated by \code{GA::fitness()}. It must
 #' be the case that a lower fitness score means a better model.
 #'
 #' @param offspringNum number of offspring generated to update the generation.
@@ -26,12 +26,15 @@
 #' probability proportional to ranking and one parent randomly, and 3 indicates
 #' selecting with method of tournament selection.
 #'
+#' @param dat data frame containing the predictors in the model.
+#' First column should be the response variable.
+#'
 #' @param K number of groups to partition the population into.
 #'
 #' @details This function selects parents to breed based on the passed in
 #' selection mechanism. Select (offspringNum / 2) pairs of parents from the
 #' passed in population pop, by specific selection mechanism and the fitness
-#' scores fitScore obtained from \code{GA::fitness()}.
+#' scores fitScores obtained from \code{GA::fitness()}.
 #'
 #' @return Returns a list containing the index for each of parent 1, the index
 #' for each of parent 2, the fittest individual, and the fitness scores for the
@@ -39,13 +42,16 @@
 #'
 #' @examples
 #' dat <- mtcars
-#' pop <- initialization(ncol(dat) - 1)
+#' C <- ncol(dat) - 1
+#' P <- as.integer(1.5 * C)
+#' pop <- initialization(C, P)
 #' model <- lm
 #' fitnessFunction <- AIC
-#' fitScore <- fitness(pop, X, y, fitnessFunction, model)
+#' fitScores <- fitness(pop, X, y, fitnessFunction, model)
 #' offspringNum <- 10
-#' selection(pop, fitScore, offspringNum, method = 1, K)
-selection <- function(pop, fitScore, offspringNum, method, K){
+#' selection(pop, fitScores, offspringNum, method = 1, K)
+
+selection <- function(pop, fitScores, offspringNum, method, dat, K){
 
   # Size of the generation
   P <- ncol(pop)
@@ -59,7 +65,7 @@ selection <- function(pop, fitScore, offspringNum, method, K){
 
     # Compute a vector of probability weights proportional to ranking
     # Since lowest score is the best, take the reverse rank
-    fitnessProb <- 2 * rank(-fitScore) / (P * (P + 1))
+    fitnessProb <- 2 * rank(-fitScores) / (P * (P + 1))
 
     # Index for parent 1
     indexParent1 <- sample(x = 1:P, size = offspringNum / 2, replace = T,
@@ -76,7 +82,7 @@ selection <- function(pop, fitScore, offspringNum, method, K){
 
     # Compute a vector of probability weights proportional to ranking
     # Since lowest score is the best, take the reverse rank
-    fitnessProb <- 2 * rank(-fitScore) / (P * (P + 1))
+    fitnessProb <- 2 * rank(-fitScores) / (P * (P + 1))
 
     # Index for parent 1
     indexParent1 <- sample(x = 1:P, size = offspringNum / 2, replace = T,
@@ -91,7 +97,9 @@ selection <- function(pop, fitScore, offspringNum, method, K){
 
     #define function to find the index of the best fit in the assigned group
     myFit <- function(m){
-      ind <- order(fitness(pop[,GroupInd[,m]], X, y, fitnessFunction, model))[1]
+      X <- as.matrix(dat[-1])
+      y <- as.matrix(dat[1])
+      ind <- order(fitness(pop[, GroupInd[, m]], X, y, fitnessFunction, model))[1]
       return(ind)
     }
 
@@ -103,7 +111,7 @@ selection <- function(pop, fitScore, offspringNum, method, K){
 
     #Number of the population after the select iteration
     numRest <- P
-    popInd <- 1:P
+    popInd <- 1 : P
     goodFitTol <- NULL
 
     while(choose < offspringNum){
@@ -112,10 +120,10 @@ selection <- function(pop, fitScore, offspringNum, method, K){
       sampInd <- sample(popInd, numRest- numRest %% K)
 
       #Partition into K disjoint subsets, each column represents a group
-      GroupInd <- matrix(sampInd, ncol=K)
+      GroupInd <- matrix(sampInd, ncol = K)
 
       #Find the index of best individual in each group
-      goodFit <- sapply(m, myFit)+floor(numRest/K)*(m-1)
+      goodFit <- sapply(m, myFit) + floor(numRest / K) * (m - 1)
 
       #count the total number of good fit indivduals
       choose <- choose + K
@@ -127,15 +135,15 @@ selection <- function(pop, fitScore, offspringNum, method, K){
       goodFitTol <- c(goodFitTol, goodFit)
 
       #number of rest poplation will be used in the next iteration
-      numRest <- numRest-K
+      numRest <- numRest - K
     }
 
     #if the number of choose larger than the number of population(P) we need, choose the first P
     if(choose > offspringNum){
-      goodFitTol <- goodFitTol[1:offspringNum]
+      goodFitTol <- goodFitTol[1 : offspringNum]
     }
     #Randomly pair the parents
-    randomPairInd <- sample(1:offspringNum, offspringNum/2)
+    randomPairInd <- sample(1 : offspringNum, offspringNum / 2)
 
     indexParent1 <- goodFitTol[randomPairInd]
     indexParent2 <- goodFitTol[-randomPairInd]
@@ -144,7 +152,7 @@ selection <- function(pop, fitScore, offspringNum, method, K){
   }
 
   else {
-    stop("Need to pass in a selection mechanism.")
+    stop("Need to choose a selection mechanism.")
   }
 
   # Build the selection result as a list
@@ -152,7 +160,7 @@ selection <- function(pop, fitScore, offspringNum, method, K){
   selResult$indexParent1<-indexParent1
   selResult$indexParent2<-indexParent2
   # selResult$fittest <- pop[,which.max(fitnessProb)] # Keep a copy of the fittest individual.
-  selResult$fitnessScores <- fitScore # keep for plotting
+  selResult$fitnessScores <- fitScores # keep for plotting
 
   # Return the result
   return(selResult)

@@ -22,10 +22,13 @@
 #' @param model the linear model that user wants to use to fit in the data,
 #' can be either \code{lm} or \code{glm}.
 #'
+#' @param dat data frame containing the predictors in the model.
+#' First column should be the response variable.
+#'
 #' @return Returns a matrix containing one row with \code{ncol(pop)}
 #' observations of the fitness scores of each chromosomes.
 
-fitness <- function(pop, y, X, fitnessFunction, model) {
+fitness <- function(pop, y, X, fitnessFunction, model, dat) {
 
   # Number of chromosomes
   P <- ncol(pop)
@@ -40,17 +43,22 @@ fitness <- function(pop, y, X, fitnessFunction, model) {
 
     # Select columns of data matrix X, based on chromosome
     chosen <- pop[, i]
-    Xsel <- X[, chosen]
+    XSel <- as.matrix(X[, chosen])
 
-    # check for null model
-    if (ncol(Xsel) == 0) {Xsel = 1}
 
-    # Calculate the fitness using lm() or glm()
-    score <- fitnessFunction(model(y ~ Xsel, data = dat))
+    # Check for null model and calculate the fitness
+    if (ncol(XSel) == 0) {
+      score <- fitnessFunction(model(y ~ 1, data = dat))
+    } else {
+      score <- fitnessFunction(model(y ~ XSel, data = dat))
+    }
+
+    # Check
     stopifnot(length(score) == 1)
 
     # update the place holder vector
     fit <- c(fit, score)
+
   }
 
   # return the result

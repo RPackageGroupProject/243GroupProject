@@ -19,6 +19,7 @@
 #' @examples
 #' ind <- initialization(10)[, 1]
 #' mutation(ind)
+
 mutation <- function(chr){
 
   # For each element of chr determine whether to mutate with 1% prob

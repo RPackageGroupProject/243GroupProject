@@ -7,7 +7,7 @@
 #' @description Bernoulli sampling to form the initial generation of the
 #' Genetic Algorithm.
 #'
-#' @usage initialization(C)
+#' @usage initialization(C, P)
 #'
 #' @param C chromosome length (number of predictor variables)
 #'
@@ -21,7 +21,8 @@
 #' as active and F as inactive.
 #'
 #' @examples
-#' initialization(10)
+#' initialization(10, 15)
+
 initialization <- function(C, P){
 
   # Bernoulli sampling T or F to obtain C of them

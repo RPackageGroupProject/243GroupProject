@@ -23,6 +23,7 @@
 #' ind1 <- initialization(10)[, 1]
 #' ind2 <- initialization(10)[, 2]
 #' crossover(ind1, ind2)
+
 crossover <- function(chr1, chr2){
 
   # length of each chromosome

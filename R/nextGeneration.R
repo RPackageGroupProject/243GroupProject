@@ -29,14 +29,17 @@
 #' pop <- initialization(C) #produce boleans matrix
 #' selResult <- selection(pop, f = AIC, dat)
 #' pop <- nextGeneration(pop, selResult)
+
 nextGeneration <- function(pop, selResult, offspringNum){
 
   # Size of the generation
   P <- ncol(pop)
 
   # Extract the parents
-  allParent1 <- pop[,selResult$indexParent1]
-  allParent2 <- pop[,selResult$indexParent2]
+  allParent1 <- as.matrix(pop[, selResult$indexParent1],
+                          ncol = length(selResult$indexParent1))
+  allParent2 <- as.matrix(pop[, selResult$indexParent2],
+                          ncol = length(selResult$indexParent2))
 
   # Extract the index of the individuals in the parenting generation that
   # needed to be replaced by offspring
