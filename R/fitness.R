@@ -17,7 +17,7 @@
 #'
 #' @param fitnessFunction fitness function that takes in an lm or glm model and
 #' returns a numerical fitness of that model. Users can choose AIC or BIC or
-#' even define by themselves. If the argument is missing, the default is AIC.
+#' even define by themselves.
 #'
 #' @param model the linear model that user wants to use to fit in the data,
 #' can be either \code{lm} or \code{glm}.

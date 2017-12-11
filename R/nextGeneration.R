@@ -24,11 +24,18 @@
 #' generation.
 #'
 #' @examples
-#' dat <- mtcars # use the built-in mtcars data
-#' C <- dim(dat)[2] - 1 #Number of variables
-#' pop <- initialization(C) #produce boleans matrix
-#' selResult <- selection(pop, f = AIC, dat)
-#' pop <- nextGeneration(pop, selResult)
+#' dat <- mtcars
+#' C <- ncol(dat) - 1
+#' P <- as.integer(1.5 * C)
+#' pop <- initialization(C, P)
+#' fitnessFunction <- AIC
+#' model <- lm
+#' y <- as.matrix(dat[1])
+#' X <- as.matrix(dat[-1])
+#' fitScores <- fitness(pop, y, X, fitnessFunction, model, dat)
+#' offspringNum <- 4
+#' selResult <- selection(pop, fitnessFunction, model, fitScores, offspringNum, method = 1, dat, K = 2)
+#' nextGeneration(pop, selResult, offspringNum)
 
 nextGeneration <- function(pop, selResult, offspringNum){
 

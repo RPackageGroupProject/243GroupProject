@@ -5,31 +5,49 @@
 #' Uses a genetic algorithm for variable selection in either lm or glm models
 #'
 #' @usage
-#' select(mod,dat,f)
-#'
-#' @param model the linear model that user wants to use to fit in the data,
-#' can be either \code{lm} or \code{glm}.
+#' select(dat)
 #'
 #' @param dat data frame containing the predictors in the model.
 #' First column should be the response variable.
 #'
-#' @param f fitness function that takes in an lm or glm model and returns a
-#' a numerical 'qualification' of that model. Users can choose AIC or BIC or
-#' even define by themselves. If the f argument is missing, the default is AIC.
+#' @param P number of chromosomes, same as the size of generation. If not
+#' specified, the default is set to be 1.5 * C where C is chromosome length.
 #'
-#' @param ... additional arguments to pass to the model function. DID NOT IMPLEMENT YET
+#' @param numGens total number of generations, default to be 100.
 #'
-#' @param G numeric number in the range of (0, 1].
+#' @param G the proportion of the current generation to be replaced by the
+#' offspring to construct the next generation, should be a numeric number in
+#' the range of (0, 1], default to be 0.2 which is 20 percent.
+#'
+#' @param fitnessFunction fitness function that takes in an lm or glm model and
+#' returns a numerical fitness of that model. Users can choose AIC or BIC or
+#' even define by themselves, but need to make sure a lower fitness scores
+#' indicates the corresponding model is better.
+#'
+#' @param method the selection mechanism that user wants to apply to select
+#' parents, can be choosen from 1 to 3; 1 indicates selecting both parents with
+#' probability proportional to ranking; 2 indicates selecting one parent with
+#' probability proportional to ranking and one parent randomly, and 3 indicates
+#' selecting with method of tournament selection; default is method 1.
+#'
+#' @param model the linear model that user wants to use to fit in the data,
+#' can be either \code{lm} or \code{glm}; default to be \code{lm}.
+#'
+#' @param family ***argument for when model = \code{glm}.
+#'
+#' @param K number of groups to partition the population into; default is 2.
 #'
 #' @details The algorithm:
 #' (1) First initializes population,
 #' For g generations; do:
 #' (2) calculates fitness of models and selects parent pairs to breed
-#' (3) breeds the parent pairs, choosing the first child
-#' (4) replaces the parents with the children
+#' (3) breeds the parent pairs, obtain the children
+#' (4) replaces the least fit individuals in current generation with the
+#'     children to obtain the next generation
 #'
-#' @return Returns a list with the fittest model and
-#' a matrix of the population fitness across generations (useful for plotting)
+#' @return Returns a list with the fittest model and the corresponding fitness
+#' score, together with a matrix of the population fitness across generations
+#' (useful for plotting)
 #'
 #' @export
 #'
@@ -38,7 +56,7 @@
 
 select <- function(dat,
                    P = NULL, numGens = NULL, G = NULL, fitnessFunction = NULL,
-                   method = NULL, model = NULL, family = NULL){
+                   method = NULL, model = NULL, family = NULL, K = NULL){
 
   # Number of variables, same as chromosome length
   C <- ncol(dat) - 1
@@ -48,13 +66,13 @@ select <- function(dat,
   if (is.null(numGens)) {numGens <- 100}
   if (is.null(G)) {G <- 0.5}
   if (is.null(fitnessFunction)) {fitnessFunction <- AIC}
-                                                  # function(fit,...){return(extractAIC(fit,...)[2])}
   if (is.null(method)) {method <- 1}
   if (is.null(model)) {model <- lm}
   if (is.null(family)) {family <- gaussian}
+  if (is.null(K)) {K <- 2}
 
   # Check if inputs are valid
-
+  if (is.null(dat)) {stop("Need to pass in data.")}
 
   # Initialize population
   pop <- initialization(C = C, P = P) # generate random starting population
@@ -85,7 +103,8 @@ select <- function(dat,
                          model = model, dat = dat)
 
     # Selection of parents
-    selResult <- selection(pop = pop, fitScores = fitScores,
+    selResult <- selection(pop = pop, fitnessFunction = fitnessFunction,
+                           model = model, fitScores = fitScores,
                            offspringNum = offspringNum,
                            method = method, dat = dat, K = K)
 
@@ -101,7 +120,13 @@ select <- function(dat,
     print(paste('Generation: ', gen, ' Fitness: ', min(selResult$fitnessScores)))
 
     # select next generation by updating the current generation
-    pop <- nextGeneration(pop, selResult, offspringNum)
+    # do not update if it is the last generation
+    if (gen < numGens) {
+      pop <- nextGeneration(pop, selResult, offspringNum)
+    }
+    else {
+      print("ALgorithm Ends")
+    }
 
   }
 
@@ -116,7 +141,7 @@ select <- function(dat,
   fittestMod <- model(formula = form, data = dat)
   fittestScore <- fitnessFunction(model(formula = form, data = dat))
 
-  # return
+  # return result as a list
   genResult <- list()
   genResult$fittestModel <- fittestMod
   genResult$fittestScore <- fittestScore

@@ -20,8 +20,8 @@
 #' operator of crossover and mutation, C is the chromosome length.
 #'
 #' @examples
-#' ind1 <- initialization(10)[, 1]
-#' ind2 <- initialization(10)[, 2]
+#' ind1 <- initialization(10, 15)[, 1]
+#' ind2 <- initialization(10, 15)[, 2]
 #' crossover(ind1, ind2)
 
 crossover <- function(chr1, chr2){

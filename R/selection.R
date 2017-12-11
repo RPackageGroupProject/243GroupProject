@@ -15,6 +15,13 @@
 #'
 #' @param pop boleans matrix determined by \code{GA::initialization()}.
 #'
+#' @param fitnessFunction fitness function that takes in an lm or glm model and
+#' returns a numerical fitness of that model. Users can choose AIC or BIC or
+#' even define by themselves.
+#'
+#' @param model the linear model that user wants to use to fit in the data,
+#' can be either \code{lm} or \code{glm}.
+#'
 #' @param fitScores fitness scores calculated by \code{GA::fitness()}. It must
 #' be the case that a lower fitness score means a better model.
 #'
@@ -45,13 +52,15 @@
 #' C <- ncol(dat) - 1
 #' P <- as.integer(1.5 * C)
 #' pop <- initialization(C, P)
-#' model <- lm
 #' fitnessFunction <- AIC
-#' fitScores <- fitness(pop, X, y, fitnessFunction, model)
-#' offspringNum <- 10
-#' selection(pop, fitScores, offspringNum, method = 1, K)
+#' model <- lm
+#' y <- as.matrix(dat[1])
+#' X <- as.matrix(dat[-1])
+#' fitScores <- fitness(pop, y, X, fitnessFunction, model, dat)
+#' offspringNum <- 4
+#' selection(pop, fitnessFunction, model, fitScores, offspringNum, method = 1, dat, K = 2)
 
-selection <- function(pop, fitScores, offspringNum, method, dat, K){
+selection <- function(pop, fitnessFunction, model, fitScores, offspringNum, method, dat, K){
 
   # Size of the generation
   P <- ncol(pop)
@@ -99,12 +108,12 @@ selection <- function(pop, fitScores, offspringNum, method, dat, K){
     myFit <- function(m){
       X <- as.matrix(dat[-1])
       y <- as.matrix(dat[1])
-      ind <- order(fitness(pop[, GroupInd[, m]], X, y, fitnessFunction, model))[1]
+      ind <- order(fitness(pop[, GroupInd[, m]], y, X, fitnessFunction, model, dat))[1]
       return(ind)
     }
 
     #initialize some index needed in while loop
-    m <- 1:K
+    m <- 1 : K
 
     #index of how many number of we already choose
     choose <- 0
