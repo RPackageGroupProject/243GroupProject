@@ -16,27 +16,33 @@ opts_chunk$set(fig.width = 3, fig.height = 3)
 library(sads)
 @
 
-\section*{Description of Algorithm}
+\section*{Description of Algorithm and Approach to Modularization}
 
-asdfasdfsadf
+Our package has one main function select(). This does the entire genetic algorithm on a dataset containing rows as examples and columns as variables.
 
-\section*{Approach to coding}
+Our approach to modularization was break the genetic algorithm into its natural processes.
+(1) initialize population of chromosomes initialize(),
+(2) calculation of fitness fitness(),
+(3) selection of parents for breeding selection(),
+(4) breeding parents and choosing the next generation nextGeneration(). Within this function, we use crossover() to do the actual breeding and mutation().
+
+We allow changes to the general algorithm in a number of ways:
+
+We implemented 3 ways to select the parent generation. The first method was to use fitness-rank-based probabilities to select both parents in the pairs chosen to breed. The second method used fitness-rank-based probabilities to choose just one parent in each pair, and the second parent was chosen randomly. This might help preserved diversity in population, which is important for not converging to local minimum. The third method is tournament selection, which FILL IN HERE. These methods can be toggled between by the user by using the K parameter.
+
+We also implemented a flexible generation gap (the percent of children replacing the parents in each generation) as well as allowed for a user specified number of generations and starting population size.
+
+In terms of represenation, our chromosomes are boolean vectors which are used to index an X-matrix, with columns for each predictor variables. The population set of chromosomes is a matrix of the boolean chromosome vectors and is passed into various functions. nextGeneration() returns a modified version of the population set of chromosomes. We did this, rather than keep old generation chromosomes, to save memory. We do, however, store the fitness scores for each model for each generation that we use to plot the progress of the algorithm (see examples).
 
 
-asdasdf
 \section*{Examples}
 
 
 asdfasdf
 
 <<r-chunk1, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
-lambda<-3; alpha<-2; beta<-3;
-plot(seq(0,10,0.1),dpareto(seq(0,10,0.1),beta,alpha),
-     type='l',col='blue',xlab='x',ylab='f(x)')
-lines(seq(0,10,0.1),dexp(seq(0,10,0.1),1),type='l',col='red')
-legend('topright',0.4,
-       legend=c('Pareto (blue)','exponential (red)'),
-       col=c('blue','red'))
+
+
 @
 
 \end{document}
