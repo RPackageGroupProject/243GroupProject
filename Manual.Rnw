@@ -1,0 +1,42 @@
+\documentclass{article}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5em}
+
+\begin{document}
+\title{Final Project}
+\author{.....Chris Gagne}
+\date{Dec 15 2017}
+
+\maketitle
+
+<<setup, include=FALSE>>=
+library(knitr) # need this for opts_chunk command
+opts_chunk$set(fig.width = 3, fig.height = 3)
+library(sads)
+@
+
+\section*{Description of Algorithm}
+
+asdfasdfsadf
+
+\section*{Approach to coding}
+
+
+asdasdf
+\section*{Examples}
+
+
+asdfasdf
+
+<<r-chunk1, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+lambda<-3; alpha<-2; beta<-3;
+plot(seq(0,10,0.1),dpareto(seq(0,10,0.1),beta,alpha),
+     type='l',col='blue',xlab='x',ylab='f(x)')
+lines(seq(0,10,0.1),dexp(seq(0,10,0.1),1),type='l',col='red')
+legend('topright',0.4,
+       legend=c('Pareto (blue)','exponential (red)'),
+       col=c('blue','red'))
+@
+
+\end{document}

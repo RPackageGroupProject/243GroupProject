@@ -61,7 +61,6 @@ select <- function(dat,
   # Number of variables, same as chromosome length
   C <- ncol(dat) - 1
 
-  print()
   # Make default inputs
   if (is.null(P)) {P <- as.integer(1.5 * C)}
   if (is.null(numGens)) {numGens <- 100}
