@@ -45,6 +45,9 @@ install('GA')
 library('GA')
 @
 
+The package is kept in XYZ's github repo here:
+The username for the repo is:
+
 \section*{Tests}
 
 Testing
@@ -140,5 +143,14 @@ Backwards selection chooses the best model containing regressors for (wt, qseq, 
 # Comparing against backwards selection
 step(full, direction="backward",trace=FALSE)
 @
+
+\section*{Contributions of Team Members}
+- design of algorithm (all members)
+- wrapper function (Z,C)
+- selection ...
+- package organization (chris)
+- tests ...
+- pdf document...
+
 
 \end{document}
