@@ -4,7 +4,7 @@
 \setlength{\parskip}{0.5em}
 
 \begin{document}
-\title{Final Project}
+\title{STAT 243 Final Project: Genetic Algorithm for Model Selection}
 \author{.....Chris Gagne}
 \date{Dec 15 2017}
 
@@ -34,15 +34,111 @@ We also implemented a flexible generation gap (the percent of children replacing
 
 In terms of represenation, our chromosomes are boolean vectors which are used to index an X-matrix, with columns for each predictor variables. The population set of chromosomes is a matrix of the boolean chromosome vectors and is passed into various functions. nextGeneration() returns a modified version of the population set of chromosomes. We did this, rather than keep old generation chromosomes, to save memory. We do, however, store the fitness scores for each model for each generation that we use to plot the progress of the algorithm (see examples).
 
+\section*{Installation}
 
-\section*{Examples}
+Our package can be installed by either downloading and setting the working directory and installing or installing directly from github.
+
+Check out the documentation by running ?select.
+<<r-chunk1, eval=FALSE, cache=TRUE,fig.width=8,fig.height=4>>=
+install('GA')
+# or git_install('GA')
+library('GA')
+@
+
+\section*{Tests}
+
+Testing
+<<r-chunk2, eval=FALSE, cache=TRUE,fig.width=8,fig.height=4>>=
+library('testthat')
+test('GA')
+
+@
+
+\section*{Example 1:}
+
+Here is a basic example of how to use our package.
+
+<<r-chunk3, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+
+dat<-mtcars # specifify a data set
+# notes: the first column needs to by y
+# the rest of the columns are possible predictors
+
+# FIX
+setwd("~/Desktop/GA/R")
+source('select.R')
+
+results<-select(dat) # fit
 
 
-asdfasdf
 
-<<r-chunk1, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+@
 
+We can inspect the best fitted model.
+<<r-chunk4, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
 
+# inspect fittest model
+summary(results$fittest_model)
+@
+
+As well as see the fitness of the chromosomes as the algorithm proceeds.
+
+<<r-chunk5, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+
+i<-nrow(results$fitnessScores)
+g<-ncol(results$fitnessScores)
+X<-matrix(rep(seq(g),i,g),nrow=i,ncol=g)
+Y<-t(results$fitnessScores)
+plot(X,Y,xlab='generation',ylab='AIC',pch=19,cex=0.5)
+lines(seq(g),apply(results$fitnessScores,FUN=min,MARGIN=2),lty=1,col='green')
+
+@
+
+\section*{Example User Inputs}
+
+Here, we show different parameters that we can specifiy for our algorithm.
+<<r-chunk6, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+library('stats')
+
+dat<-mtcars
+P<-100 # population size
+mod<-glm # model type
+numGens<-100
+G<-0.75 # generation gap (replace 75% of parents with children)
+K<-2 # which method to use for parent selection  ### Fix documentation for this ##
+f<-function(fit,...){return(extractAIC(fit,...)[2])} # doesn't seem to be working **
+results<-select(dat,P=P,mod=mod,numGens=numGens,G=G,K=K,fitnessFunction=f)
+
+@
+
+We can plot this as well
+
+<<r-chunk6b, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+i<-nrow(results$fitnessScores)
+g<-ncol(results$fitnessScores)
+X<-matrix(rep(seq(g),i,g),nrow=i,ncol=g)
+Y<-t(results$fitnessScores)
+plot(X,Y,xlab='generation',ylab='AIC',pch=19,cex=0.5)
+lines(seq(g),apply(results$fitnessScores,FUN=min,MARGIN=2),lty=1,col='green')
+@
+
+\section*{Example Comparison against forward/backward selection}
+
+Forward selection chooses:..
+<<r-chunk7, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+
+# Comparing against forward selection
+null=lm(dat[,1]~1, data=dat[,-1])
+full=lm(dat[,1]~., data=dat[,-1])
+step(null, scope=list(lower=null, upper=full), direction="forward",trace=FALSE)
+
+@
+
+Backwards selection chooses the best model containing regressors for (wt, qseq, am)
+<<r-chunk8, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+
+# Comparing against backwards selection
+step(full, direction="backward",trace=FALSE)
 @
 
 \end{document}
