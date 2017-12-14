@@ -35,6 +35,8 @@ can be either \code{lm} or \code{glm}; default to be \code{lm}.}
 
 \item{K}{number of groups to partition the population into; default is 2.}
 
+\item{verbose}{logical; if TRUE (default) prints the progress of algorithm}
+
 \item{...}{additional arguments to pass to regression model}
 }
 \value{

@@ -35,6 +35,8 @@
 #'
 #' @param K number of groups to partition the population into; default is 2.
 #'
+#' @param verbose logical; if TRUE (default) prints the progress of algorithm
+#'
 #' @param ... additional arguments to pass to regression model
 #'
 #' @details The algorithm:
