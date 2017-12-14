@@ -33,9 +33,9 @@ selecting with method of tournament selection; default is method 1.}
 \item{model}{the linear model that user wants to use to fit in the data,
 can be either \code{lm} or \code{glm}; default to be \code{lm}.}
 
-\item{family}{***argument for when model = \code{glm}.}
-
 \item{K}{number of groups to partition the population into; default is 2.}
+
+\item{...}{additional arguments to pass to regression model}
 }
 \value{
 Returns a list with the fittest model and the corresponding fitness

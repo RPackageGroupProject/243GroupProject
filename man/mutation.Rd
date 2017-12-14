@@ -20,7 +20,3 @@ This function makes a chromosome have a 1% fixed chance to mutate
 in each locale. If mutation happens at one locale, it will make the value
 in that locale from T to F or from F to T.
 }
-\examples{
-ind <- initialization(10, 15)[, 1]
-mutation(ind)
-}

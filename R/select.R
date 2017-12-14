@@ -33,9 +33,9 @@
 #' @param model the linear model that user wants to use to fit in the data,
 #' can be either \code{lm} or \code{glm}; default to be \code{lm}.
 #'
-#' @param family ***argument for when model = \code{glm}.
-#'
 #' @param K number of groups to partition the population into; default is 2.
+#'
+#' @param ... additional arguments to pass to regression model
 #'
 #' @details The algorithm:
 #' (1) First initializes population,
@@ -56,7 +56,7 @@
 
 select <- function(dat,
                    P = NULL, numGens = NULL, G = NULL, fitnessFunction = NULL,
-                   method = NULL, model = NULL, family = NULL, K = NULL, verbose=NULL){
+                   method = NULL, model = NULL, K = NULL, verbose=NULL,...){
 
   # Number of variables, same as chromosome length
   C <- ncol(dat) - 1
@@ -68,7 +68,6 @@ select <- function(dat,
   if (is.null(fitnessFunction)) {fitnessFunction <- AIC}
   if (is.null(method)) {method <- 1}
   if (is.null(model)) {model <- lm}
-  if (is.null(family)) {family <- gaussian}
   if (is.null(K)) {K <- 2}
   if (is.null(verbose)){verbose <- TRUE}
 
@@ -119,7 +118,7 @@ select <- function(dat,
     # Obtain fitness scores for each model
     fitScores <- fitness(pop = pop, y= y, X = X,
                          fitnessFunction = fitnessFunction,
-                         model = model, dat = dat)
+                         model = model, dat = dat,...)
 
     # Selection of parents
     selResult <- selection(pop = pop, fitnessFunction = fitnessFunction,
@@ -159,8 +158,8 @@ select <- function(dat,
   # fit the best model
   form <- as.formula(paste(response, "~",
                            paste(predictors[chosen], collapse = "+")))
-  fittestMod <- model(formula = form, data = dat)
-  fittestScore <- fitnessFunction(model(formula = form, data = dat))
+  fittestMod <- model(formula = form, data = dat,...)
+  fittestScore <- fitnessFunction(model(formula = form, data = dat,...))
 
   # return result as a list
   genResult <- list()

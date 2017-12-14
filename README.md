@@ -1,14 +1,15 @@
 # GA
-an R package to implement a genetic algorithm for variable selection in regression problems
+An R package to implement a genetic algorithm for variable selection in regression problems
 
 ## Installation
-requires devtools
+
+Install directly from github. 
 
 ```
 install_github('RPackageGroupProject/GA')
 ```
 
-or clone repo
+or clone repo and install. 
 
 ```
 install('GA')
@@ -16,4 +17,4 @@ install('GA')
 
 ## Examples
 
-see Example.R
+see ?select

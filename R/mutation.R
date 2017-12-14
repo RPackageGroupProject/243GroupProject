@@ -15,10 +15,7 @@
 #' in that locale from T to F or from F to T.
 #'
 #' @return Return a mutated chromosome vector with the same length as input.
-#'
-#' @examples
-#' ind <- initialization(10, 15)[, 1]
-#' mutation(ind)
+
 
 mutation <- function(chr){
 

@@ -22,6 +22,8 @@ can be either \code{lm} or \code{glm}.}
 
 \item{dat}{data frame containing the predictors in the model.
 First column should be the response variable.}
+
+\item{...}{additional arguments to pass to regression model}
 }
 \value{
 Returns a matrix containing one row with \code{ncol(pop)}

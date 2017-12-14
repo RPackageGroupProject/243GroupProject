@@ -25,10 +25,12 @@
 #' @param dat data frame containing the predictors in the model.
 #' First column should be the response variable.
 #'
+#' @param ... additional arguments to pass to regression model
+#'
 #' @return Returns a matrix containing one row with \code{ncol(pop)}
 #' observations of the fitness scores of each chromosomes.
 
-fitness <- function(pop, y, X, fitnessFunction, model, dat) {
+fitness <- function(pop, y, X, fitnessFunction, model, dat,...) {
 
   # Number of chromosomes
   P <- ncol(pop)
@@ -48,9 +50,9 @@ fitness <- function(pop, y, X, fitnessFunction, model, dat) {
 
     # Check for null model and calculate the fitness
     if (ncol(XSel) == 0) {
-      score <- fitnessFunction(model(y ~ 1, data = dat))
+      score <- fitnessFunction(model(y ~ 1, data = dat,...))
     } else {
-      score <- fitnessFunction(model(y ~ XSel, data = dat))
+      score <- fitnessFunction(model(y ~ XSel, data = dat,...))
     }
 
     # Check

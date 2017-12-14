@@ -24,6 +24,3 @@ length for Genetic Algorithm and the population size. The row of the
 generated boolean matrix represents the locus of a gene(variable), and the
 column of the matrix represents different members of the first generation.
 }
-\examples{
-initialization(10, 15)
-}

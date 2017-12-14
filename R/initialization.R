@@ -19,9 +19,7 @@
 #' @return A Bolean Matrix with dimension C by P where each column
 #' representing a chromosome, in which T marks that the gene(variable)
 #' as active and F as inactive.
-#'
-#' @examples
-#' initialization(10, 15)
+
 
 initialization <- function(C, P){
 

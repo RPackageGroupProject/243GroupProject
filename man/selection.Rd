@@ -50,16 +50,3 @@ selection mechanism. Select (offspringNum / 2) pairs of parents from the
 passed in population pop, by specific selection mechanism and the fitness
 scores fitScores obtained from \code{GA::fitness()}.
 }
-\examples{
-dat <- mtcars
-C <- ncol(dat) - 1
-P <- as.integer(1.5 * C)
-pop <- initialization(C, P)
-fitnessFunction <- AIC
-model <- lm
-y <- as.matrix(dat[1])
-X <- as.matrix(dat[-1])
-fitScores <- fitness(pop, y, X, fitnessFunction, model, dat)
-offspringNum <- 4
-selection(pop, fitnessFunction, model, fitScores, offspringNum, method = 1, dat, K = 2)
-}

@@ -46,19 +46,7 @@
 #' @return Returns a list containing the index for each of parent 1, the index
 #' for each of parent 2, the fittest individual, and the fitness scores for the
 #' whole population.
-#'
-#' @examples
-#' dat <- mtcars
-#' C <- ncol(dat) - 1
-#' P <- as.integer(1.5 * C)
-#' pop <- initialization(C, P)
-#' fitnessFunction <- AIC
-#' model <- lm
-#' y <- as.matrix(dat[1])
-#' X <- as.matrix(dat[-1])
-#' fitScores <- fitness(pop, y, X, fitnessFunction, model, dat)
-#' offspringNum <- 4
-#' selection(pop, fitnessFunction, model, fitScores, offspringNum, method = 1, dat, K = 2)
+
 
 selection <- function(pop, fitnessFunction, model, fitScores, offspringNum, method, dat, K){
 

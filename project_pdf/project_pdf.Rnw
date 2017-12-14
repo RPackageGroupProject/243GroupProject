@@ -1,0 +1,160 @@
+\documentclass{article}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.5em}
+
+\begin{document}
+\title{STAT 243 Final Project: Genetic Algorithm for Model Selection}
+\author{Chris Gagne,Zicheng Huang,Yuchen Zhang,Mengying Yang}
+\date{Dec 15 2017}
+
+\maketitle
+
+<<setup, include=FALSE>>=
+library(knitr) # need this for opts_chunk command
+opts_chunk$set(fig.width = 3, fig.height = 3)
+library(sads)
+@
+
+\section*{Description of Algorithm}
+
+Our package has one main function \texttt{select()}. This applies a genetic algorithm to select the best linear model in a dataset, which contains rows as observations and columns as potential variables.
+
+We modularized our code by breaking down the genetic algorithm into these steps and corresponding functions:
+\begin{itemize}
+\item (1) generating the initial population of chromosomes  \texttt{initialize()},
+\item (2) calculating the fitness for that population \texttt{fitness()},
+\item (3) selecting parents for breeding \texttt{selection()},
+\item (4) breeding parents and choosing the next generation \texttt{nextGeneration()}. Within this function, we use \texttt{crossover()} as the genetic operator to do the actual breeding which includes doing crossover of the parent chromosomes to obtain offspring and added a small amount of randomness into the chromosome using \texttt{mutation()}.
+\end{itemize}
+
+\subsection*{Modification of Algorithm by User Input}
+
+We also allow user input to adjust the genetic algorithm in a number of ways:
+
+We implemented 3 ways to select parents for breeding. The first method uses fitness-rank-based probabilities to select all parents. The second method uses fitness-rank-based probabilities to choose one parent in each pair, and chooses the second parent randomly. We found that this method does better at preserving diversity in population, thus preventing early convergence. The third method uses tournament selection. This method splits the population into K groups, selects the fittest parent in each group and repeats the process until enough parents have been selected for breeding.
+
+We also implemented a flexible generation gap -- the percentage of children replacing the parents in each generation. This had a large impact on the convergence of the algorithm to the global optimum (see examples below).
+
+We also allow the user to specify the number of generations, the starting population size, to use glm vs. lm, and the fitness function.
+
+\subsection*{Variable Representation}
+
+We chose to represent our chromosomes as boolean vectors, which are used to index the data matrix. The population set of chromosomes is a matrix of these boolean chromosomes and is passed into various functions. \texttt{nextGeneration()} returns a modified version of the population set of chromosomes. We did this, rather than keep old generation chromosomes, to save memory. We do, however, store the fitness scores for each model in each generation that we can plot (see examples).
+
+\section*{Installation}
+
+Our package can be installed by either downloading and installing, or installing directly from github.
+
+<<r-chunk1, eval=FALSE, cache=TRUE>>=
+install('GA')
+install_git('RPackageGroupProject/GA')
+@
+
+The package is kept in group folder: https://github.com/RPackageGroupProject/GA
+The owner of the repo is: mindyyang
+
+\section*{Documentation}
+
+The documentation can be found by using the following:
+<<r-chunk1b, eval=FALSE, cache=TRUE>>=
+?GA::select
+?GA::crossover
+@
+
+Note that only the \texttt{select()} and \texttt{plotGA()} are directly accessible to users.
+
+\section*{Tests}
+
+The package can be tested using the 'testthat' package.
+<<r-chunk2, eval=FALSE>>=
+library('testthat')
+library('GA')
+test_package('GA')
+@
+
+\section*{Example 1: basic usage}
+
+Our package comes with many defaults, so at the minimum it can be used in one line using \texttt{select()}. All it requires is a dataset, where the first column is the predictor (y) and the rest of the columns are potential variables for the variable selection.
+
+<<r-chunk3, eval=TRUE, cache=TRUE>>=
+library('GA')
+results<-select(mtcars)
+@
+
+Our function returns the best fitting model.
+<<r-chunk4, eval=TRUE, cache=TRUE>>=
+results$fittestModel
+@
+
+It also returns fitness scores for all generations, which can be plot using the our built in function \texttt{plotGA()}. The points are the fitness for individual models, and the line is the best fitness achieved at each generation.
+
+<<r-chunk5, eval=TRUE, cache=TRUE,fig.width=8,fig.height=5>>=
+plotGA(results)
+@
+
+\section*{Example 2: comparison against backwards selection}
+
+We compared the results of our model to backwards selection. Backwards selection chooses the model chooses the same model containing regressors for (wt, qseq, am). This seems to be the best model, as it's the lowest we've seen in any iteration of our algorithm. We also tried forward selection, which does not find this model.
+
+<<r-chunk8, eval=TRUE, cache=TRUE>>=
+full=lm(mtcars[,1]~., data=mtcars[,-1])
+step(full, direction="backward",trace=FALSE)
+@
+
+\section*{Example 3: user inputs}
+
+Users can specify a number of different parameters.
+
+<<r-chunk6, eval=TRUE, cache=TRUE>>=
+library('stats')
+userfunc<-function(fit,...){return(extractAIC(fit,...)[2])}
+results<-select(dat=mtcars, # dataset
+                P=50, # population size
+                model=glm, # model lm or glm()
+                numGens=100, # number of generations
+                G=0.25, # generation gap
+                method=2, # parent selection method
+                K=2, # number of groups for tournament selection
+                fitnessFunction=userfunc, #user defined fitness
+                verbose=FALSE, # whether to print results
+                )
+results$fittestModel
+@
+
+We can plot this as well. Notice that with a smaller generation gap, the population maintains variance for longer.
+<<r-chunk6b, eval=TRUE, cache=TRUE,fig.width=8,fig.height=5>>=
+plotGA(results)
+@
+
+\section*{Example 4: early convergence}
+
+A big difference in our algorithm is the generation Gap. With too high of a generation gap, the algorithm often converges to a local minimum. We considered adjusting the mutation rate and not allowing duplicate parents. These should both help.
+
+<<r-chunk17, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+results<-select(dat=mtcars,G=.8,verbose=TRUE)
+results$fittestModel
+@
+
+You can see that most of the population converged to the local minimum.
+<<r-chunk16b, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+plotGA(results)
+@
+
+
+\section*{Contributions of Team Members}
+
+The project consisted of the following components. We put who contributed to each part in parentheses:
+\begin{itemize}
+\item design of algorithm (all members)
+\item select function (Chris and Zicheng)
+\item parent selection (Yuchen and Mengying)
+\item crossover (Yuchen and Mengying)
+\item other function (all members)
+\item package organization (Chris)
+\item tests (all members)
+\item pdf document (Chris and Zicheng)
+\end{itemize}
+
+
+\end{document}
