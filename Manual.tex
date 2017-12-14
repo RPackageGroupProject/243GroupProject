@@ -84,16 +84,18 @@ In terms of represenation, our chromosomes are boolean vectors which are used to
 
 Our package can be installed by either downloading and setting the working directory and installing or installing directly from github.
 
-Check out the documentation by running ?select.
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{install}\hlstd{(}\hlstr{'GA'}\hlstd{)}
 \hlcom{# or git_install('GA')}
-\hlkwd{library}\hlstd{(}\hlstr{'GA'}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
+
+The package is kept in XYZ's github repo here:
+The username for the repo is:
 
 \section*{Tests}
 
@@ -114,19 +116,28 @@ Here is a basic example of how to use our package.
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{'GA'}\hlstd{)}
 \hlstd{dat}\hlkwb{<-}\hlstd{mtcars} \hlcom{# specifify a data set}
-\hlcom{# notes: the first column needs to by y}
+\hlcom{# as the documentation points out,}
+\hlcom{# the first column needs to by y and}
 \hlcom{# the rest of the columns are possible predictors}
-
-\hlcom{# FIX}
-\hlkwd{setwd}\hlstd{(}\hlstr{"~/Desktop/GA/R"}\hlstd{)}
-\hlkwd{source}\hlstd{(}\hlstr{'select.R'}\hlstd{)}
 
 \hlstd{results}\hlkwb{<-}\hlkwd{select}\hlstd{(dat)} \hlcom{# fit}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in initialization(C = C, P = P): could not find function "{}initialization"{}}}\end{kframe}
+\begin{verbatim}
+## [1] "Generation:  10  Fitness:  156.652338825641"
+## [1] "Generation:  20  Fitness:  155.476628510258"
+## [1] "Generation:  30  Fitness:  155.476628510258"
+## [1] "Generation:  40  Fitness:  155.476628510258"
+## [1] "Generation:  50  Fitness:  155.476628510258"
+## [1] "Generation:  60  Fitness:  155.476628510258"
+## [1] "Generation:  70  Fitness:  155.476628510258"
+## [1] "Generation:  80  Fitness:  155.476628510258"
+## [1] "Generation:  90  Fitness:  155.476628510258"
+## [1] "Generation:  100  Fitness:  155.476628510258"
+## [1] "ALgorithm Ends"
+\end{verbatim}
+\end{kframe}
 \end{knitrout}
 
 We can inspect the best fitted model.
@@ -134,11 +145,31 @@ We can inspect the best fitted model.
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# inspect fittest model}
-\hlkwd{summary}\hlstd{(results}\hlopt{$}\hlstd{fittest_model)}
+\hlkwd{summary}\hlstd{(results}\hlopt{$}\hlstd{fittestModel)}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in summary(results\$fittest\_model): object 'results' not found}}\end{kframe}
+\begin{verbatim}
+## 
+## Call:
+## model(formula = form, data = dat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.9290 -1.5598 -0.5311  1.1850  5.8986 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 38.75179    1.78686  21.687  < 2e-16 ***
+## cyl         -0.94162    0.55092  -1.709 0.098480 .  
+## hp          -0.01804    0.01188  -1.519 0.140015    
+## wt          -3.16697    0.74058  -4.276 0.000199 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2.512 on 28 degrees of freedom
+## Multiple R-squared:  0.8431,	Adjusted R-squared:  0.8263 
+## F-statistic: 50.17 on 3 and 28 DF,  p-value: 2.184e-11
+\end{verbatim}
+\end{kframe}
 \end{knitrout}
 
 As well as see the fitness of the chromosomes as the algorithm proceeds.
@@ -146,125 +177,22 @@ As well as see the fitness of the chromosomes as the algorithm proceeds.
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{i}\hlkwb{<-}\hlkwd{nrow}\hlstd{(results}\hlopt{$}\hlstd{fitnessScores)}
+\hlkwd{plotGA}\hlstd{(results)}
 \end{alltt}
 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in nrow(results\$fitnessScores): object 'results' not found}}\begin{alltt}
-\hlstd{g}\hlkwb{<-}\hlkwd{ncol}\hlstd{(results}\hlopt{$}\hlstd{fitnessScores)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in ncol(results\$fitnessScores): object 'results' not found}}\begin{alltt}
-\hlstd{X}\hlkwb{<-}\hlkwd{matrix}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlkwd{seq}\hlstd{(g),i,g),}\hlkwc{nrow}\hlstd{=i,}\hlkwc{ncol}\hlstd{=g)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in seq(g): object 'g' not found}}\begin{alltt}
-\hlstd{Y}\hlkwb{<-}\hlkwd{t}\hlstd{(results}\hlopt{$}\hlstd{fitnessScores)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in t(results\$fitnessScores): object 'results' not found}}\begin{alltt}
-\hlkwd{plot}\hlstd{(X,Y,}\hlkwc{xlab}\hlstd{=}\hlstr{'generation'}\hlstd{,}\hlkwc{ylab}\hlstd{=}\hlstr{'AIC'}\hlstd{,}\hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}\hlkwc{cex}\hlstd{=}\hlnum{0.5}\hlstd{)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(X, Y, xlab = "{}generation"{}, ylab = "{}AIC"{}, pch = 19, cex = 0.5): object 'X' not found}}\begin{alltt}
-\hlkwd{lines}\hlstd{(}\hlkwd{seq}\hlstd{(g),}\hlkwd{apply}\hlstd{(results}\hlopt{$}\hlstd{fitnessScores,}\hlkwc{FUN}\hlstd{=min,}\hlkwc{MARGIN}\hlstd{=}\hlnum{2}\hlstd{),}\hlkwc{lty}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{col}\hlstd{=}\hlstr{'green'}\hlstd{)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in seq(g): object 'g' not found}}\end{kframe}
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plotGA(results): could not find function "{}plotGA"{}}}\end{kframe}
 \end{knitrout}
 
-\section*{Example User Inputs}
-
-Here, we show different parameters that we can specifiy for our algorithm.
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(}\hlstr{'stats'}\hlstd{)}
-
-\hlstd{dat}\hlkwb{<-}\hlstd{mtcars}
-\hlstd{P}\hlkwb{<-}\hlnum{100} \hlcom{# population size}
-\hlstd{mod}\hlkwb{<-}\hlstd{glm} \hlcom{# model type}
-\hlstd{numGens}\hlkwb{<-}\hlnum{100}
-\hlstd{G}\hlkwb{<-}\hlnum{0.75} \hlcom{# generation gap (replace 75% of parents with children)}
-\hlstd{K}\hlkwb{<-}\hlnum{2} \hlcom{# which method to use for parent selection  ### Fix documentation for this ##}
-\hlstd{f}\hlkwb{<-}\hlkwa{function}\hlstd{(}\hlkwc{fit}\hlstd{,}\hlkwc{...}\hlstd{)\{}\hlkwd{return}\hlstd{(}\hlkwd{extractAIC}\hlstd{(fit,...)[}\hlnum{2}\hlstd{])\}} \hlcom{# doesn't seem to be working **}
-\hlstd{results}\hlkwb{<-}\hlkwd{select}\hlstd{(dat,}\hlkwc{P}\hlstd{=P,}\hlkwc{mod}\hlstd{=mod,}\hlkwc{numGens}\hlstd{=numGens,}\hlkwc{G}\hlstd{=G,}\hlkwc{K}\hlstd{=K,}\hlkwc{fitnessFunction}\hlstd{=f)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in initialization(C = C, P = P): could not find function "{}initialization"{}}}\end{kframe}
-\end{knitrout}
-
-We can plot this as well
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{i}\hlkwb{<-}\hlkwd{nrow}\hlstd{(results}\hlopt{$}\hlstd{fitnessScores)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in nrow(results\$fitnessScores): object 'results' not found}}\begin{alltt}
-\hlstd{g}\hlkwb{<-}\hlkwd{ncol}\hlstd{(results}\hlopt{$}\hlstd{fitnessScores)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in ncol(results\$fitnessScores): object 'results' not found}}\begin{alltt}
-\hlstd{X}\hlkwb{<-}\hlkwd{matrix}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlkwd{seq}\hlstd{(g),i,g),}\hlkwc{nrow}\hlstd{=i,}\hlkwc{ncol}\hlstd{=g)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in seq(g): object 'g' not found}}\begin{alltt}
-\hlstd{Y}\hlkwb{<-}\hlkwd{t}\hlstd{(results}\hlopt{$}\hlstd{fitnessScores)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in t(results\$fitnessScores): object 'results' not found}}\begin{alltt}
-\hlkwd{plot}\hlstd{(X,Y,}\hlkwc{xlab}\hlstd{=}\hlstr{'generation'}\hlstd{,}\hlkwc{ylab}\hlstd{=}\hlstr{'AIC'}\hlstd{,}\hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{,}\hlkwc{cex}\hlstd{=}\hlnum{0.5}\hlstd{)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plot(X, Y, xlab = "{}generation"{}, ylab = "{}AIC"{}, pch = 19, cex = 0.5): object 'X' not found}}\begin{alltt}
-\hlkwd{lines}\hlstd{(}\hlkwd{seq}\hlstd{(g),}\hlkwd{apply}\hlstd{(results}\hlopt{$}\hlstd{fitnessScores,}\hlkwc{FUN}\hlstd{=min,}\hlkwc{MARGIN}\hlstd{=}\hlnum{2}\hlstd{),}\hlkwc{lty}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{col}\hlstd{=}\hlstr{'green'}\hlstd{)}
-\end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in seq(g): object 'g' not found}}\end{kframe}
-\end{knitrout}
 
 \section*{Example Comparison against forward/backward selection}
 
-Forward selection chooses:..
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlcom{# Comparing against forward selection}
-\hlstd{null}\hlkwb{=}\hlkwd{lm}\hlstd{(dat[,}\hlnum{1}\hlstd{]}\hlopt{~}\hlnum{1}\hlstd{,} \hlkwc{data}\hlstd{=dat[,}\hlopt{-}\hlnum{1}\hlstd{])}
-\hlstd{full}\hlkwb{=}\hlkwd{lm}\hlstd{(dat[,}\hlnum{1}\hlstd{]}\hlopt{~}\hlstd{.,} \hlkwc{data}\hlstd{=dat[,}\hlopt{-}\hlnum{1}\hlstd{])}
-\hlkwd{step}\hlstd{(null,} \hlkwc{scope}\hlstd{=}\hlkwd{list}\hlstd{(}\hlkwc{lower}\hlstd{=null,} \hlkwc{upper}\hlstd{=full),} \hlkwc{direction}\hlstd{=}\hlstr{"forward"}\hlstd{,}\hlkwc{trace}\hlstd{=}\hlnum{FALSE}\hlstd{)}
-\end{alltt}
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = dat[, 1] ~ wt + cyl + hp, data = dat[, -1])
-## 
-## Coefficients:
-## (Intercept)           wt          cyl           hp  
-##    38.75179     -3.16697     -0.94162     -0.01804
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-Backwards selection chooses the best model containing regressors for (wt, qseq, am)
+Backwards selection chooses the best model containing regressors for (wt, qseq, am). This seems to be the best model - as it's the lowest we've seen in any iteration of our algorithm. Note that forward selection does not achieve this model.
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlcom{# Comparing against backwards selection}
+\hlstd{full}\hlkwb{=}\hlkwd{lm}\hlstd{(dat[,}\hlnum{1}\hlstd{]}\hlopt{~}\hlstd{.,} \hlkwc{data}\hlstd{=dat[,}\hlopt{-}\hlnum{1}\hlstd{])}
 \hlkwd{step}\hlstd{(full,} \hlkwc{direction}\hlstd{=}\hlstr{"backward"}\hlstd{,}\hlkwc{trace}\hlstd{=}\hlnum{FALSE}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
@@ -278,5 +206,204 @@ Backwards selection chooses the best model containing regressors for (wt, qseq, 
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
+
+
+\section*{Example User Inputs}
+
+Here, we show different parameters that we can specifiy for our algorithm. It obtains the fittest model (wt,qsec,am).
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{'stats'}\hlstd{)}
+\hlkwd{library}\hlstd{(}\hlstr{'GA'}\hlstd{)}
+\hlcom{#function(fit,...)\{return(extractAIC(fit,...)[2])\}}
+\hlstd{results}\hlkwb{<-}\hlkwd{select}\hlstd{(}\hlkwc{dat}\hlstd{=mtcars,}
+                \hlkwc{P}\hlstd{=}\hlnum{50}\hlstd{,}
+                \hlkwc{model}\hlstd{=glm,}
+                \hlkwc{numGens}\hlstd{=}\hlnum{100}\hlstd{,}
+                \hlkwc{G}\hlstd{=}\hlnum{0.25}\hlstd{,}
+                \hlkwc{method}\hlstd{=}\hlnum{2}\hlstd{,}
+                \hlkwc{K}\hlstd{=}\hlnum{2}\hlstd{,}
+                \hlkwc{fitnessFunction}\hlstd{=AIC}
+                \hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "Generation:  10  Fitness:  154.119370868901"
+## [1] "Generation:  20  Fitness:  154.119370868901"
+## [1] "Generation:  30  Fitness:  154.119370868901"
+## [1] "Generation:  40  Fitness:  154.119370868901"
+## [1] "Generation:  50  Fitness:  154.119370868901"
+## [1] "Generation:  60  Fitness:  154.119370868901"
+## [1] "Generation:  70  Fitness:  154.119370868901"
+## [1] "Generation:  80  Fitness:  154.119370868901"
+## [1] "Generation:  90  Fitness:  154.119370868901"
+## [1] "Generation:  100  Fitness:  154.119370868901"
+## [1] "ALgorithm Ends"
+\end{verbatim}
+\begin{alltt}
+\hlstd{results}\hlopt{$}\hlstd{fittestModel}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:  model(formula = form, data = dat)
+## 
+## Coefficients:
+## (Intercept)           wt         qsec           am  
+##       9.618       -3.917        1.226        2.936  
+## 
+## Degrees of Freedom: 31 Total (i.e. Null);  28 Residual
+## Null Deviance:	    1126 
+## Residual Deviance: 169.3 	AIC: 154.1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+We can plot this as well
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plotGA}\hlstd{(results)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plotGA(results): could not find function "{}plotGA"{}}}\end{kframe}
+\end{knitrout}
+
+\section*{Example Early Convergence}
+
+A big difference in our algorithm is the generation Gap. With too high of a generation gap, the algorithm often converges to a local minimum. We would consider adding mutation rate as a flexible parameter in the future.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(}\hlstr{'stats'}\hlstd{)}
+
+\hlstd{results}\hlkwb{<-}\hlkwd{select}\hlstd{(}\hlkwc{dat}\hlstd{=mtcars,}
+                \hlkwc{P}\hlstd{=}\hlnum{50}\hlstd{,}
+                \hlkwc{model}\hlstd{=glm,}
+                \hlkwc{numGens}\hlstd{=}\hlnum{100}\hlstd{,}
+                \hlkwc{G}\hlstd{=}\hlnum{0.76}\hlstd{,}
+                \hlkwc{method}\hlstd{=}\hlnum{2}\hlstd{,}
+                \hlkwc{K}\hlstd{=}\hlnum{2}\hlstd{,}
+                \hlkwc{fitnessFunction}\hlstd{=}\hlkwa{function}\hlstd{(}\hlkwc{fit}\hlstd{,}\hlkwc{...}\hlstd{)\{}\hlkwd{return}\hlstd{(}\hlkwd{extractAIC}\hlstd{(fit,...)[}\hlnum{2}\hlstd{])\}}
+                \hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## function (formula, family = gaussian, data, weights, subset, 
+##     na.action, start = NULL, etastart, mustart, offset, control = list(...), 
+##     model = TRUE, method = "glm.fit", x = FALSE, y = TRUE, contrasts = NULL, 
+##     ...) 
+## {
+##     call <- match.call()
+##     if (is.character(family)) 
+##         family <- get(family, mode = "function", envir = parent.frame())
+##     if (is.function(family)) 
+##         family <- family()
+##     if (is.null(family$family)) {
+##         print(family)
+##         stop("'family' not recognized")
+##     }
+##     if (missing(data)) 
+##         data <- environment(formula)
+##     mf <- match.call(expand.dots = FALSE)
+##     m <- match(c("formula", "data", "subset", "weights", "na.action", 
+##         "etastart", "mustart", "offset"), names(mf), 0L)
+##     mf <- mf[c(1L, m)]
+##     mf$drop.unused.levels <- TRUE
+##     mf[[1L]] <- quote(stats::model.frame)
+##     mf <- eval(mf, parent.frame())
+##     if (identical(method, "model.frame")) 
+##         return(mf)
+##     if (!is.character(method) && !is.function(method)) 
+##         stop("invalid 'method' argument")
+##     if (identical(method, "glm.fit")) 
+##         control <- do.call("glm.control", control)
+##     mt <- attr(mf, "terms")
+##     Y <- model.response(mf, "any")
+##     if (length(dim(Y)) == 1L) {
+##         nm <- rownames(Y)
+##         dim(Y) <- NULL
+##         if (!is.null(nm)) 
+##             names(Y) <- nm
+##     }
+##     X <- if (!is.empty.model(mt)) 
+##         model.matrix(mt, mf, contrasts)
+##     else matrix(, NROW(Y), 0L)
+##     weights <- as.vector(model.weights(mf))
+##     if (!is.null(weights) && !is.numeric(weights)) 
+##         stop("'weights' must be a numeric vector")
+##     if (!is.null(weights) && any(weights < 0)) 
+##         stop("negative weights not allowed")
+##     offset <- as.vector(model.offset(mf))
+##     if (!is.null(offset)) {
+##         if (length(offset) != NROW(Y)) 
+##             stop(gettextf("number of offsets is %d should equal %d (number of observations)", 
+##                 length(offset), NROW(Y)), domain = NA)
+##     }
+##     mustart <- model.extract(mf, "mustart")
+##     etastart <- model.extract(mf, "etastart")
+##     fit <- eval(call(if (is.function(method)) "method" else method, 
+##         x = X, y = Y, weights = weights, start = start, etastart = etastart, 
+##         mustart = mustart, offset = offset, family = family, 
+##         control = control, intercept = attr(mt, "intercept") > 
+##             0L))
+##     if (length(offset) && attr(mt, "intercept") > 0L) {
+##         fit2 <- eval(call(if (is.function(method)) "method" else method, 
+##             x = X[, "(Intercept)", drop = FALSE], y = Y, weights = weights, 
+##             offset = offset, family = family, control = control, 
+##             intercept = TRUE))
+##         if (!fit2$converged) 
+##             warning("fitting to calculate the null deviance did not converge -- increase 'maxit'?")
+##         fit$null.deviance <- fit2$deviance
+##     }
+##     if (model) 
+##         fit$model <- mf
+##     fit$na.action <- attr(mf, "na.action")
+##     if (x) 
+##         fit$x <- X
+##     if (!y) 
+##         fit$y <- NULL
+##     fit <- c(fit, list(call = call, formula = formula, terms = mt, 
+##         data = data, offset = offset, control = control, method = method, 
+##         contrasts = attr(X, "contrasts"), xlevels = .getXlevels(mt, 
+##             mf)))
+##     class(fit) <- c(fit$class, c("glm", "lm"))
+##     fit
+## }
+## <bytecode: 0x7ffad1042b88>
+## <environment: namespace:stats>
+\end{verbatim}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in initialization(C = C, P = P): could not find function "{}initialization"{}}}\begin{alltt}
+\hlstd{results}\hlopt{$}\hlstd{fittestModel}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(expr, envir, enclos): object 'results' not found}}\end{kframe}
+\end{knitrout}
+
+We can plot this as well
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plotGA}\hlstd{(results)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in plotGA(results): could not find function "{}plotGA"{}}}\end{kframe}
+\end{knitrout}
+
+
+
+\section*{Contributions of Team Members}
+- design of algorithm (all members)
+- wrapper function (Z,C)
+- selection ...
+- package organization (chris)
+- tests ...
+- pdf document...
+
 
 \end{document}

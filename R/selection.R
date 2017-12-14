@@ -36,7 +36,7 @@
 #' @param dat data frame containing the predictors in the model.
 #' First column should be the response variable.
 #'
-#' @param K number of groups to partition the population into.
+#' @param K number of groups to partition the population into for tournament selection
 #'
 #' @details This function selects parents to breed based on the passed in
 #' selection mechanism. Select (offspringNum / 2) pairs of parents from the

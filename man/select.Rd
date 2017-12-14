@@ -4,24 +4,43 @@
 \alias{select}
 \title{Uses a genetic algorithm for variable selection in either lm or glm models}
 \usage{
-select(mod,dat,f)
+select(dat)
 }
 \arguments{
 \item{dat}{data frame containing the predictors in the model.
 First column should be the response variable.}
 
-\item{f}{fitness function that takes in an lm or glm model and returns a
-a numerical 'qualification' of that model. Users can choose AIC or BIC or
-even define by themselves. If the f argument is missing, the default is AIC.}
+\item{P}{number of chromosomes, same as the size of generation. If not
+specified, the default is set to be 1.5 * C where C is chromosome length.}
+
+\item{numGens}{total number of generations, default to be 100.}
+
+\item{G}{the proportion of the current generation to be replaced by the
+offspring to construct the next generation, should be a numeric number in
+the range of (0, 1], default to be 0.2 which is 20 percent.}
+
+\item{fitnessFunction}{fitness function that takes in an lm or glm model and
+returns a numerical fitness of that model. Users can choose AIC or BIC or
+even define by themselves, but need to make sure a lower fitness scores
+indicates the corresponding model is better.}
+
+\item{method}{the selection mechanism that user wants to apply to select
+parents, can be choosen from 1 to 3; 1 indicates selecting both parents with
+probability proportional to ranking; 2 indicates selecting one parent with
+probability proportional to ranking and one parent randomly, and 3 indicates
+selecting with method of tournament selection; default is method 1.}
 
 \item{model}{the linear model that user wants to use to fit in the data,
-can be either \code{lm} or \code{glm}.}
+can be either \code{lm} or \code{glm}; default to be \code{lm}.}
 
-\item{...}{additional arguments to pass to the model function. DID NOT IMPLEMENT YET}
+\item{family}{***argument for when model = \code{glm}.}
+
+\item{K}{number of groups to partition the population into; default is 2.}
 }
 \value{
-Returns a list with the fittest model and
-a matrix of the population fitness across generations (useful for plotting)
+Returns a list with the fittest model and the corresponding fitness
+score, together with a matrix of the population fitness across generations
+(useful for plotting)
 }
 \description{
 Uses a genetic algorithm for variable selection in either lm or glm models
@@ -31,18 +50,10 @@ The algorithm:
 (1) First initializes population,
 For g generations; do:
 (2) calculates fitness of models and selects parent pairs to breed
-(3) breeds the parent pairs, choosing the first child
-(4) replaces the parents with the children
+(3) breeds the parent pairs, obtain the children
+(4) replaces the least fit individuals in current generation with the
+    children to obtain the next generation
 }
 \examples{
-dat <- mtcars
-mod <- lm
-library('stats')
-f <- function(fit,...){return(extractAIC(fit,...)[2])}
-results <- select(mod, dat, f)
-summary(results$fittest_model)
-X <- matrix(rep(seq(numGens), nrow(results$fitness), numGens), nrow = n, ncol = numGens)
-Y <- t(results$fitness)
-plot(X, Y, xlab = 'generation', ylab = 'AIC', pch = 19, cex = 0.5)
-lines(seq(numGens), apply(results$fitness, FUN = min, MARGIN = 2), lty = 1, col = 'green')
+select(mtcars)
 }

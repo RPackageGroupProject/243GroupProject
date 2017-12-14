@@ -38,11 +38,11 @@ In terms of represenation, our chromosomes are boolean vectors which are used to
 
 Our package can be installed by either downloading and setting the working directory and installing or installing directly from github.
 
-Check out the documentation by running ?select.
+
 <<r-chunk1, eval=FALSE, cache=TRUE,fig.width=8,fig.height=4>>=
 install('GA')
 # or git_install('GA')
-library('GA')
+
 @
 
 The package is kept in XYZ's github repo here:
@@ -62,18 +62,13 @@ test('GA')
 Here is a basic example of how to use our package.
 
 <<r-chunk3, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
-
+library('GA')
 dat<-mtcars # specifify a data set
-# notes: the first column needs to by y
+# as the documentation points out,
+# the first column needs to by y and
 # the rest of the columns are possible predictors
 
-# FIX
-setwd("~/Desktop/GA/R")
-source('select.R')
-
 results<-select(dat) # fit
-
-
 
 @
 
@@ -81,68 +76,78 @@ We can inspect the best fitted model.
 <<r-chunk4, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
 
 # inspect fittest model
-summary(results$fittest_model)
+summary(results$fittestModel)
 @
 
 As well as see the fitness of the chromosomes as the algorithm proceeds.
 
 <<r-chunk5, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
 
-i<-nrow(results$fitnessScores)
-g<-ncol(results$fitnessScores)
-X<-matrix(rep(seq(g),i,g),nrow=i,ncol=g)
-Y<-t(results$fitnessScores)
-plot(X,Y,xlab='generation',ylab='AIC',pch=19,cex=0.5)
-lines(seq(g),apply(results$fitnessScores,FUN=min,MARGIN=2),lty=1,col='green')
-
+plotGA(results)
 @
+
+
+\section*{Example Comparison against forward/backward selection}
+
+Backwards selection chooses the best model containing regressors for (wt, qseq, am). This seems to be the best model - as it's the lowest we've seen in any iteration of our algorithm. Note that forward selection does not achieve this model.
+<<r-chunk8, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+
+# Comparing against backwards selection
+full=lm(dat[,1]~., data=dat[,-1])
+step(full, direction="backward",trace=FALSE)
+@
+
 
 \section*{Example User Inputs}
 
-Here, we show different parameters that we can specifiy for our algorithm.
-<<r-chunk6, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+Here, we show different parameters that we can specifiy for our algorithm. It obtains the fittest model (wt,qsec,am).
+
+<<r-chunk6, eval=TRUE, cache=FALSE,fig.width=8,fig.height=4>>=
 library('stats')
-
-dat<-mtcars
-P<-100 # population size
-mod<-glm # model type
-numGens<-100
-G<-0.75 # generation gap (replace 75% of parents with children)
-K<-2 # which method to use for parent selection  ### Fix documentation for this ##
-f<-function(fit,...){return(extractAIC(fit,...)[2])} # doesn't seem to be working **
-results<-select(dat,P=P,mod=mod,numGens=numGens,G=G,K=K,fitnessFunction=f)
-
+library('GA')
+#function(fit,...){return(extractAIC(fit,...)[2])}
+results<-select(dat=mtcars,
+                P=50,
+                model=glm,
+                numGens=100,
+                G=0.25,
+                method=2,
+                K=2,
+                fitnessFunction=AIC
+                )
+results$fittestModel
 @
 
 We can plot this as well
 
 <<r-chunk6b, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
-i<-nrow(results$fitnessScores)
-g<-ncol(results$fitnessScores)
-X<-matrix(rep(seq(g),i,g),nrow=i,ncol=g)
-Y<-t(results$fitnessScores)
-plot(X,Y,xlab='generation',ylab='AIC',pch=19,cex=0.5)
-lines(seq(g),apply(results$fitnessScores,FUN=min,MARGIN=2),lty=1,col='green')
+plotGA(results)
 @
 
-\section*{Example Comparison against forward/backward selection}
+\section*{Example Early Convergence}
 
-Forward selection chooses:..
-<<r-chunk7, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+A big difference in our algorithm is the generation Gap. With too high of a generation gap, the algorithm often converges to a local minimum. We would consider adding mutation rate as a flexible parameter in the future.
+<<r-chunk17, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+library('stats')
 
-# Comparing against forward selection
-null=lm(dat[,1]~1, data=dat[,-1])
-full=lm(dat[,1]~., data=dat[,-1])
-step(null, scope=list(lower=null, upper=full), direction="forward",trace=FALSE)
-
+results<-select(dat=mtcars,
+                P=50,
+                model=glm,
+                numGens=100,
+                G=0.76,
+                method=2,
+                K=2,
+                fitnessFunction=function(fit,...){return(extractAIC(fit,...)[2])}
+                )
+results$fittestModel
 @
 
-Backwards selection chooses the best model containing regressors for (wt, qseq, am)
-<<r-chunk8, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
-
-# Comparing against backwards selection
-step(full, direction="backward",trace=FALSE)
+We can plot this as well
+<<r-chunk16b, eval=TRUE, cache=TRUE,fig.width=8,fig.height=4>>=
+plotGA(results)
 @
+
+
 
 \section*{Contributions of Team Members}
 - design of algorithm (all members)

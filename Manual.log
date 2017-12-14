@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  12 DEC 2017 21:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  13 DEC 2017 17:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -169,141 +169,163 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 Package color Info: Redefining color shadecolor on input line 89.
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 91.
-Package color Info: Redefining color shadecolor on input line 102.
-Package color Info: Redefining color shadecolor on input line 115.
-
-Overfull \hbox (85.49625pt too wide) in paragraph at lines 129--129
-[]\OT1/cmtt/m/n/10 ## Error in initialization(C = C, P = P): could not find fun
-ction "initialization"[] 
- []
-
-Package color Info: Redefining color shadecolor on input line 134.
-
-Overfull \hbox (26.27675pt too wide) in paragraph at lines 141--141
-[]\OT1/cmtt/m/n/10 ## Error in summary(results$fittest[]model): object 'results
-' not found[] 
- []
+Package color Info: Redefining color shadecolor on input line 104.
+Package color Info: Redefining color shadecolor on input line 117.
 
 [2]
-Package color Info: Redefining color shadecolor on input line 147.
-
-Overfull \hbox (11.99689pt too wide) in paragraph at lines 153--153
-[]\OT1/cmtt/m/n/10 ## Error in nrow(results$fitnessScores): object 'results' no
-t found[] 
- []
-
-
-Overfull \hbox (11.99689pt too wide) in paragraph at lines 158--158
-[]\OT1/cmtt/m/n/10 ## Error in ncol(results$fitnessScores): object 'results' no
-t found[] 
- []
-
-
-Overfull \hbox (6.74693pt too wide) in paragraph at lines 173--173
-[]\OT1/cmtt/m/n/10 ## Error in plot(X, Y, xlab = "generation", ylab = "AIC", pc
-h = 19,
- []
-
-
-Overfull \hbox (59.24648pt too wide) in paragraph at lines 174--174
-[][]\OT1/cmtt/m/n/10 lines[][]([][]seq[][](g),[][]apply[][](results[][]$[][]fit
-nessScores,[][]FUN[][]=min,[][]MARGIN[][]=[][]2[][]),[][]lty[][]=[][]1[][],[][]
-col[][]=[][]^^Mgreen^^M[][])[][] 
- []
-
-Package color Info: Redefining color shadecolor on input line 185.
-
-Overfull \hbox (87.23236pt too wide) in paragraph at lines 194--194
-[][]\OT1/cmtt/m/n/10 K[][]<-[][]2[] []\OT1/cmtt/m/it/10 # which method to use f
-or parent selection  ### Fix documentation for this ##[][] 
- []
-
-LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 195
+Package color Info: Redefining color shadecolor on input line 145.
+Package color Info: Redefining color shadecolor on input line 178.
+Package color Info: Redefining color shadecolor on input line 192.
+ [3]
+Package color Info: Redefining color shadecolor on input line 216.
+LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 220
 .
+
 (/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/omscmtt.fd
 File: omscmtt.fd 
 )
+LaTeX Font Info:    Font shape `OMS/cmtt/m/it' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 220.
+
+[4]
+Package color Info: Redefining color shadecolor on input line 265.
+Package color Info: Redefining color shadecolor on input line 278.
 LaTeX Font Info:    Font shape `OMS/cmtt/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 195.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 289.
 
-Overfull \hbox (97.23239pt too wide) in paragraph at lines 195--195
-[][]\OT1/cmtt/m/n/10 f[][]<-[][]function[][]([][]fit[][],[][]...[][])\OMS/cmsy/
-m/n/10 f[][]\OT1/cmtt/m/n/10 return[][]([][]extractAIC[][](fit,...)[[][]2[][]])
-\OMS/cmsy/m/n/10 g[] []\OT1/cmtt/m/it/10 # doesn^^Mt seem to be working **[][] 
-
+Overfull \hbox (79.74641pt too wide) in paragraph at lines 289--289
+[]                []\OT1/cmtt/m/n/10 fitnessFunction[][]=[][]function[][]([][]f
+it[][],[][]...[][])\OMS/cmsy/m/n/10 f[][]\OT1/cmtt/m/n/10 return[][]([][]extrac
+tAIC[][](fit,...)[[][]2[][]])\OMS/cmsy/m/n/10 g[][] 
  []
 
 
-Overfull \hbox (43.49661pt too wide) in paragraph at lines 196--196
-[][]\OT1/cmtt/m/n/10 results[][]<-[][]select[][](dat,[][]P[][]=P,[][]mod[][]=mo
-d,[][]numGens[][]=numGens,[][]G[][]=G,[][]K[][]=K,[][]fitnessFunction[][]=f)[][
-] 
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##     na.action, start = NULL, etastart, mustart, offset, c
+ontrol = list(...),[] 
  []
 
 
-Overfull \hbox (85.49625pt too wide) in paragraph at lines 200--200
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##     model = TRUE, method = "glm.fit", x = FALSE, y = TRUE
+, contrasts = NULL,[] 
+ []
+
+
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##         family <- get(family, mode = "function", envir = 
+parent.frame())[] 
+ []
+
+
+Overfull \hbox (32.9967pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##     m <- match(c("formula", "data", "subset", "weights", 
+"na.action",[] 
+ []
+
+
+Overfull \hbox (158.9956pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##             stop(gettextf("number of offsets is %d should
+ equal %d (number of observations)",[] 
+ []
+
+
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##     fit <- eval(call(if (is.function(method)) "method" el
+se method,[] 
+ []
+
+
+Overfull \hbox (69.74638pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##         x = X, y = Y, weights = weights, start = start, e
+tastart = etastart,[] 
+ []
+
+
+Overfull \hbox (48.74657pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##         fit2 <- eval(call(if (is.function(method)) "metho
+d" else method,[] 
+ []
+
+
+Overfull \hbox (64.49643pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##             x = X[, "(Intercept)", drop = FALSE], y = Y, 
+weights = weights,[] 
+ []
+
+
+Overfull \hbox (6.74693pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##             offset = offset, family = family, control = c
+ontrol,[] 
+ []
+
+
+Overfull \hbox (190.49533pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##             warning("fitting to calculate the null devian
+ce did not converge -- increase ^^Mmaxit^^M?")[] 
+ []
+
+
+Overfull \hbox (17.24684pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##     fit <- c(fit, list(call = call, formula = formula, te
+rms = mt,[] 
+ []
+
+
+Overfull \hbox (53.99652pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##         data = data, offset = offset, control = control, 
+method = method,[] 
+ []
+
+
+Overfull \hbox (22.4968pt too wide) in paragraph at lines 376--376
+[]\OT1/cmtt/m/n/10 ##         contrasts = attr(X, "contrasts"), xlevels = .getX
+levels(mt,[] 
+ []
+
+
+Overfull \hbox (85.49625pt too wide) in paragraph at lines 379--379
 []\OT1/cmtt/m/n/10 ## Error in initialization(C = C, P = P): could not find fun
 ction "initialization"[] 
  []
 
-[3]
-Package color Info: Redefining color shadecolor on input line 206.
 
-Overfull \hbox (11.99689pt too wide) in paragraph at lines 212--212
-[]\OT1/cmtt/m/n/10 ## Error in nrow(results$fitnessScores): object 'results' no
-t found[] 
+Overfull \hbox (1.49698pt too wide) in paragraph at lines 384--384
+[]\OT1/cmtt/m/n/10 ## Error in eval(expr, envir, enclos): object 'results' not 
+found[] 
+ []
+
+[5]
+Underfull \vbox (badness 10000) detected at line 384
  []
 
 
-Overfull \hbox (11.99689pt too wide) in paragraph at lines 217--217
-[]\OT1/cmtt/m/n/10 ## Error in ncol(results$fitnessScores): object 'results' no
-t found[] 
+Underfull \vbox (badness 10000) detected at line 384
  []
 
-
-Overfull \hbox (6.74693pt too wide) in paragraph at lines 232--232
-[]\OT1/cmtt/m/n/10 ## Error in plot(X, Y, xlab = "generation", ylab = "AIC", pc
-h = 19,
- []
-
-
-Overfull \hbox (59.24648pt too wide) in paragraph at lines 233--233
-[][]\OT1/cmtt/m/n/10 lines[][]([][]seq[][](g),[][]apply[][](results[][]$[][]fit
-nessScores,[][]FUN[][]=min,[][]MARGIN[][]=[][]2[][]),[][]lty[][]=[][]1[][],[][]
-col[][]=[][]^^Mgreen^^M[][])[][] 
- []
-
-Package color Info: Redefining color shadecolor on input line 244.
-
-Overfull \hbox (69.74638pt too wide) in paragraph at lines 249--249
-[][]\OT1/cmtt/m/n/10 step[][](null,[] []scope[][]=[][]list[][]([][]lower[][]=nu
-ll,[] []upper[][]=full),[] []direction[][]=[][]"forward"[][],[][]trace[][]=[][]
-FALSE[][])[][] 
- []
-
-[4]
-Package color Info: Redefining color shadecolor on input line 265.
- [5] (./Manual.aux) ) 
+[6]
+Package color Info: Redefining color shadecolor on input line 389.
+ [7] [8] (./Manual.aux) ) 
 Here is how much of TeX's memory you used:
  1651 strings out of 492995
- 24113 string characters out of 6132704
- 87331 words of memory out of 5000000
+ 24111 string characters out of 6132704
+ 99331 words of memory out of 5000000
  5193 multiletter control sequences out of 15000+600000
  7616 words of font info for 28 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 39i,6n,25p,571b,280s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2017/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmbx12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmitt10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmr10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmr12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmr17.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmsy10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmtt10.pfb>
-Output written on Manual.pdf (5 pages, 100819 bytes).
+ 39i,6n,25p,571b,298s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmitt10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmr17.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmsy10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmtt10.pfb>
+Output written on Manual.pdf (8 pages, 106955 bytes).
 PDF statistics:
- 48 PDF objects out of 1000 (max. 8388607)
- 33 compressed objects within 1 object stream
+ 59 PDF objects out of 1000 (max. 8388607)
+ 41 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

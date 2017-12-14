@@ -56,7 +56,7 @@
 
 select <- function(dat,
                    P = NULL, numGens = NULL, G = NULL, fitnessFunction = NULL,
-                   method = NULL, model = NULL, family = NULL, K = NULL){
+                   method = NULL, model = NULL, family = NULL, K = NULL,verbose=NULL){
 
   # Number of variables, same as chromosome length
   C <- ncol(dat) - 1
@@ -70,6 +70,7 @@ select <- function(dat,
   if (is.null(model)) {model <- lm}
   if (is.null(family)) {family <- gaussian}
   if (is.null(K)) {K <- 2}
+  if (is.null(verbose)){verbose<-TRUE}
 
   # Check if inputs are valid
   if (is.null(dat)) {stop("Need to pass in data.")}
@@ -117,7 +118,9 @@ select <- function(dat,
                              matrix(selResult$fitnessScores, ncol = 1))
       }
 
-    print(paste('Generation: ', gen, ' Fitness: ', min(selResult$fitnessScores)))
+    if((gen %% 10==0) & (verbose)){
+      print(paste('Generation: ', gen, ' Fitness: ', min(selResult$fitnessScores)))
+    }
 
     # select next generation by updating the current generation
     # do not update if it is the last generation

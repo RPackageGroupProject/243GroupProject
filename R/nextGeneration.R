@@ -58,7 +58,7 @@ nextGeneration <- function(pop, selResult, offspringNum){
     # Each time generate two offspring, stored in columns
     childrenChromes <- crossover(allParent1[, i], allParent2[, i])
 
-    # Select first child and put into pop
+    # Put both children into the population
     pop[, lessFitInd[i]] <- childrenChromes[, 1]
     pop[, lessFitInd[i + offspringNum / 2]] <- childrenChromes[, 2]
 
