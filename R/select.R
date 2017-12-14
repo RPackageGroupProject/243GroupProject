@@ -56,7 +56,7 @@
 
 select <- function(dat,
                    P = NULL, numGens = NULL, G = NULL, fitnessFunction = NULL,
-                   method = NULL, model = NULL, family = NULL, K = NULL,verbose=NULL){
+                   method = NULL, model = NULL, family = NULL, K = NULL, verbose=NULL){
 
   # Number of variables, same as chromosome length
   C <- ncol(dat) - 1
@@ -70,10 +70,28 @@ select <- function(dat,
   if (is.null(model)) {model <- lm}
   if (is.null(family)) {family <- gaussian}
   if (is.null(K)) {K <- 2}
-  if (is.null(verbose)){verbose<-TRUE}
+  if (is.null(verbose)){verbose <- TRUE}
 
   # Check if inputs are valid
   if (is.null(dat)) {stop("Need to pass in data.")}
+  if (P <= 0 || P != as.integer(P)) {stop("P needs to be a whole number greater than 0.")}
+  if (numGens <= 0 || numGens != as.integer(numGens)) {
+    stop("numGens needs to be a whole number greater than 0.")
+    }
+  if (numGens < 30) {warning("Number of generations is too small.")}
+  if (G <= 0 || G > 1) {
+    stop("Generation gap should be a numeric number in the range of (0, 1]")
+  }
+  if (!is.function(fitnessFunction)) {
+    stop("Need to pass in a function into the argument fitnessFunction.")
+  }
+  if (method != 1 & method != 2 & method != 3 ) {
+    stop("The method argument only takes in 1, 2, or 3.")
+  }
+  if (!identical(model, lm) && !identical(model, glm)) {
+    stop("The regression model should be either lm or glm.")
+  }
+
 
   # Initialize population
   pop <- initialization(C = C, P = P) # generate random starting population
